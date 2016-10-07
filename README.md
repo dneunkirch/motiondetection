@@ -78,11 +78,11 @@ Returns an array of all captured videos as following object:
 
 ```js
 {
-  "date": "dd.MM.yyyy - HH:mm:ss", // date of video
-  "video": "/events/video.mp4",    // path to video
-  "image": "/events/preview.jpg",  // path to preview image
-  "size": 1000000,                 // size of video in bytes
-  "duration": 10                   // duration of video in seconds
+  "date": "dd.MM.yyyy - HH:mm:ss",        // date of video
+  "video": "/motion/events/video.mp4",    // path to video
+  "image": "/motion/events/preview.jpg",  // path to preview image
+  "size": 1000000,                        // size of video in bytes
+  "duration": 10                          // duration of video in seconds
 }
 ```
 With the request-parameter previewImageSize (default: 640x360) you're able to control the preview image resolution (e.g. /events.php?previewImageSize=320x180).  
@@ -95,8 +95,8 @@ Returns the newest image as following object:
 
 ```js
 {
-  "url": "/live/image.jpg",       // path to image
-  "date": "dd.MM.yyyy - HH:mm:ss" // date of image
+  "url": "/motion/live/image.jpg", // path to image
+  "date": "dd.MM.yyyy - HH:mm:ss"  // date of image
 }
 ```
 

@@ -25,8 +25,8 @@ foreach ( $files as $i => $file) {
 	$datetime = date_create_from_format('Y-m-d_H-i-s' ,$prefix);
 
 	$date = date_format($datetime, 'd.m.y - H:i:s');
-	$video = "/events/$file";
-	$image = "/events/".$prefix."_".$previewImageSize.".jpg";
+	$video = "/motion/events/$file";
+	$image = "/motion/events/".$prefix."_".$previewImageSize.".jpg";
 	$videoSize = filesize("events/$file");
 	$videoLength = intval($result[2]);
 

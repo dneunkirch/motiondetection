@@ -1,7 +1,7 @@
 <?php
 header('Content-type: application/json; charset=UTF-8');
 $filesystemFolder = "/run/shm/live";
-$urlPrefix = "/live";
+$urlPrefix = "/motion/live";
 $files = scandir($filesystemFolder, 1);
 $date = "";
 $filename = "";

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 
-checkoutFolder="/etc/motion"  # without tailing slash
-webServerRoot="/var/www/html" # without tailing slash
-webServerUser="www-data"      # without tailing slash
-liveFolder="/run/shm/live/"   # with tailing slash
+checkoutFolder="/etc/motiondetection" # without tailing slash
+webServerRoot="/var/www/html"         # without tailing slash
+webServerUser="www-data"              # without tailing slash
+liveFolder="/run/shm/live/"           # with tailing slash
 
 scriptFolder=$(printf "%s/scripts/" ${checkoutFolder})
 pythonFolder=$(printf "%s/python/" ${checkoutFolder})
