@@ -3,11 +3,10 @@
 import datetime
 import logging
 import os
+import picamera.array
 import threading
 import time
 from subprocess import call
-
-import picamera.array
 
 import blacklist
 
@@ -41,7 +40,7 @@ output_folder = os.environ['MOTION_OUTPUT']
 live_folder = os.environ['MOTION_LIVE']
 script_folder = os.environ['MOTION_SCRIPTS']
 
-night_mode_allowed = os.getenv('MOTION_NIGHT_MODE_ALLOWED') == 'True'
+night_mode_allowed = os.getenv('MOTION_NIGHT_MODE_ALLOWED', 'True') == 'True'
 night_mode_start_h = int(os.getenv('MOTION_NIGHT_MODE_START_H'), 19)
 night_mode_start_m = int(os.getenv('MOTION_NIGHT_MODE_START_M'), 30)
 night_mode_end_h = int(os.getenv('MOTION_NIGHT_MODE_END_H'), 5)
