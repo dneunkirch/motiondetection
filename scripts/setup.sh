@@ -14,7 +14,7 @@ outputFolder=$(printf "%s/output/" ${checkoutFolder})
 failFolder=$(printf "%s/fail/" ${checkoutFolder})
 eventFolder=$(printf "%sevents/" ${webFolder})
 
-export MOTION_CAMERA_ROTATION=180
+export MOTION_CAMERA_ROTATION=0
 export MOTION_CAMERA_SATURATION=20
 export MOTION_CAMERA_SHARPNESS=20
 
