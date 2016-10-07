@@ -1,0 +1,37 @@
+body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.container {
+    width: 960px;
+    height: 540px;
+    margin: 0 auto;
+}
+
+#blacklist, .image, .grid {
+    width: 960px;
+    height: 540px;
+    position: absolute;
+}
+
+.grid {
+    background-size: 8px 8px;
+    background-image: linear-gradient(to right, #ccc 1px, transparent 1px),
+    linear-gradient(to bottom, #ccc 1px, transparent 1px);
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.3;
+}
+
+.image {
+    background-size: cover;
+}
+
+#blacklist {
+    opacity: 0.5;
+}

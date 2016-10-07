@@ -1,0 +1,8 @@
+/.idea/*
+/*/*.iml
+/output
+/temp
+/web/events
+/web/live
+python/blacklist.pyc
+web/whitelist.txt
