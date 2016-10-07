@@ -105,7 +105,10 @@ def check_for_camera_settings_switch(stream, output):
     end = now.replace(hour=night_mode_end_h, minute=night_mode_end_m)
 
     if night_mode_start_h > night_mode_end_h:
-        end = end + datetime.timedelta(days=1)
+        if now.hour < night_mode_start_h:
+            start = start - datetime.timedelta(days=1)
+        else:
+            end = end + datetime.timedelta(days=1)
 
     if start < now < end:
         if not night_mode_active:
@@ -161,6 +164,8 @@ def main():
                     os.rename(f1_temp, f1)
                     os.rename(f2_temp, f2)
                     call(trigger_convert_cmd, shell=True)
+    except Exception:
+        logging.exception('caught exception')
     finally:
         logging.info('motion detection stopped')
         camera.stop_recording()
