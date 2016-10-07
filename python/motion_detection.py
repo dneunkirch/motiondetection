@@ -41,12 +41,12 @@ live_folder = os.environ['MOTION_LIVE']
 script_folder = os.environ['MOTION_SCRIPTS']
 
 night_mode_allowed = os.getenv('MOTION_NIGHT_MODE_ALLOWED', 'True') == 'True'
-night_mode_start_h = int(os.getenv('MOTION_NIGHT_MODE_START_H'), '19')
-night_mode_start_m = int(os.getenv('MOTION_NIGHT_MODE_START_M'), '30')
-night_mode_end_h = int(os.getenv('MOTION_NIGHT_MODE_END_H'), '5')
-night_mode_end_m = int(os.getenv('MOTION_NIGHT_MODE_END_M'), '30')
+night_mode_start_h = int(os.getenv('MOTION_NIGHT_MODE_START_H', '19'))
+night_mode_start_m = int(os.getenv('MOTION_NIGHT_MODE_START_M', '30'))
+night_mode_end_h = int(os.getenv('MOTION_NIGHT_MODE_END_H', '5'))
+night_mode_end_m = int(os.getenv('MOTION_NIGHT_MODE_END_M', '30'))
 
-live_timeout = int(os.getenv('MOTION_LIVE_REFRESH_INTERVAL_SECONDS'), '5')
+live_timeout = int(os.getenv('MOTION_LIVE_REFRESH_INTERVAL_SECONDS', '5'))
 
 trigger_convert_cmd = 'bash ' + script_folder + 'convert_cron.sh'
 
@@ -123,9 +123,9 @@ def check_for_camera_settings_switch(stream, output):
 def main():
     try:
         logging.info('configure camera...')
-        camera.sharpness = int(os.getenv('MOTION_CAMERA_SHARPNESS'), 20)
-        camera.saturation = int(os.getenv('MOTION_CAMERA_SATURATION'), 20)
-        camera.rotation = int(os.getenv('MOTION_CAMERA_ROTATION'), 0)
+        camera.sharpness = int(os.getenv('MOTION_CAMERA_SHARPNESS', 20))
+        camera.saturation = int(os.getenv('MOTION_CAMERA_SATURATION', 20))
+        camera.rotation = int(os.getenv('MOTION_CAMERA_ROTATION', 0))
         global motion_detected
         with MotionDection(camera) as output:
             stream = change_camera_settings(output, day_settings)
