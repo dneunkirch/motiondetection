@@ -11,7 +11,7 @@ class Blacklist(object):
                         format='%(asctime)s.%(msecs)d %(levelname)s - %(message)s',
                         datefmt="%Y-%m-%d %H:%M:%S")
 
-    threshold = 10
+    threshold = 50
     motion_score = 0
     motion_blocks = None
     last_motion_check = time.time()
