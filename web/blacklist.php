@@ -12,7 +12,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Motion Detection Blacklist</title>
     <link rel="stylesheet" href="static/blacklist.css"/>
 </head>
 <body>
@@ -47,7 +47,7 @@
     </div>
 </div>
 
-<script src="static/jquery-3.1.1.min.js.css"></script>
+<script src="static/jquery-3.1.1.min.js"></script>
 <script src="static/blacklist.js"></script>
 
 
