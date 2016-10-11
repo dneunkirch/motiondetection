@@ -13,6 +13,12 @@ ob_start();
 $files = scandir("events",1);
 $json = "";
 $data = [];
+$uri = $_SERVER['REQUEST_URI'];
+$file = basename($_SERVER["SCRIPT_FILENAME"]);
+$path = preg_replace('/'.$file.'$/', '', $uri);
+if (substr($path, -1) != '/' ) {
+  $path = "$path/";
+}
 foreach ( $files as $i => $file) {
 	if ( pathinfo($file, PATHINFO_EXTENSION) != "mp4" ) {
 		continue;
@@ -25,8 +31,8 @@ foreach ( $files as $i => $file) {
 	$datetime = date_create_from_format('Y-m-d_H-i-s' ,$prefix);
 
 	$date = date_format($datetime, 'd.m.y - H:i:s');
-	$video = "/motion/events/$file";
-	$image = "/motion/events/".$prefix."_".$previewImageSize.".jpg";
+	$video = $path."events/$file";
+	$image = $path."events/".$prefix."_".$previewImageSize.".jpg";
 	$videoSize = filesize("events/$file");
 	$videoLength = intval($result[2]);
 
