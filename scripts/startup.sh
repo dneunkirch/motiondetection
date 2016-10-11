@@ -57,10 +57,12 @@ chown ${MOTION_WEB_USER} ${MOTION_WEB}
 chmod 777 ${MOTION_EVENT}
 
 convertCron=$(printf "* * * * * bash  %sconvert_cron.sh > /dev/null 2>&1" ${scriptFolder})
-cleanupCron=$(printf "*/2 * * * * bash  %slive_folder_cleanup.sh > /dev/null 2>&1" ${scriptFolder})
+cleanupLiveCron=$(printf "*/2 * * * * bash  %slive_folder_cleanup.sh > /dev/null 2>&1" ${scriptFolder})
+cleanupEventCron=$(printf "0 6 * * * bash  %sevent_folder_cleanup.sh > /dev/null 2>&1" ${scriptFolder})
 
 (crontab -l ; echo "$convertCron") | sort - | uniq - | crontab -
-(crontab -l ; echo "$cleanupCron") | sort - | uniq - | crontab -
+(crontab -l ; echo "$cleanupLiveCron") | sort - | uniq - | crontab -
+(crontab -l ; echo "$cleanupEventCron") | sort - | uniq - | crontab -
 
 log_daemon_msg "Starting $NAME"
 start-stop-daemon --user=root --start --background --pidfile ${PIDFILE} --make-pidfile --startas ${DAEMON}
