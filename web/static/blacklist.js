@@ -1,46 +1,62 @@
-var rects = {}
+var rects = {};
 
 const DRAW_TYPE_PEN = 1;
 const DRAW_TYPE_RECT = 2;
 const DRAW_MODE_ADD = 1;
 const DRAW_MODE_REMOVE = 2;
 const RECT_SIZE = 8;
+const MOTION_BLOCK_REGEX = new RegExp("([0-9]+),([0-9]+)");
 
 var penStrength = 40;
 var drawType = DRAW_TYPE_PEN;
 var drawMode = DRAW_MODE_ADD;
-
+var startX = 0, startY = 0, endX = 0, endY = 0;
+var active = false;
+var grid = $('.grid');
 var blacklist = document.getElementById('blacklist');
 var ctx = blacklist.getContext('2d');
 ctx.fillStyle = 'rgba(255, 0, 0, 1)';
 
 
-function keyName(x, y) {
-    return `(${y},${x})`;
+refreshImage();
+prepareData();
+displayCurrentBlacklist();
+watchPenStrengthChanges();
+watchMarkerTypeChanges();
+watchMarkerModeChanges();
+watchKeyInputs();
+watchMouseEvents();
+generateBlacklistOnFormSubmit();
+
+
+function displayCurrentBlacklist() {
+    $('#blacklist').data('current').split(', ').forEach((el) => {
+        let match = MOTION_BLOCK_REGEX.exec(el);
+        if (match) {
+            let y = match[1];
+            let x = match[2];
+            let key = keyName(x, y);
+            rects[key].active = false;
+        }
+    });
+    drawBlacklist();
 }
 
-for (var x = 0; x < 120; x++) {
-    for (var y = 0; y < 68; y++) {
-        rects[keyName(x, y)] = {
-            'active': true,
-            'x': x,
-            'y': y
+function prepareData() {
+    for (var x = 0; x < 120; x++) {
+        for (var y = 0; y < 68; y++) {
+            rects[keyName(x, y)] = {
+                'active': true,
+                'x': x,
+                'y': y
+            }
         }
     }
 }
 
-let motionBlockRegex = new RegExp("([0-9]+),([0-9]+)");
-$('#blacklist').data('current').split(', ').forEach((el) => {
-    let match = motionBlockRegex.exec(el);
-    if (match) {
-        let y = match[1];
-        let x = match[2];
-        let key = keyName(x, y);
-        rects[key].active = false;
-    }
-});
-drawBlacklist();
-
+function keyName(x, y) {
+    return `(${y},${x})`;
+}
 
 function refreshImage() {
     $.getJSON('live.php').then(function (data) {
@@ -48,41 +64,47 @@ function refreshImage() {
     })
 }
 
-refreshImage()
+function watchPenStrengthChanges() {
+    $('input[name=pen-strength]').change(function () {
+        penStrength = $(this).val() * RECT_SIZE;
+    });
+}
 
+function watchMarkerTypeChanges() {
+    $('input[name=marker-type]').change(function () {
+        drawType = parseInt($(this).val());
+        if (drawType === DRAW_TYPE_RECT) {
+            $('.pen-settings').hide();
+        } else if (drawType === DRAW_TYPE_PEN) {
+            $('.pen-settings').show();
+        }
+    });
+}
 
-$('input[name=pen-strength]').change(function () {
-    penStrength = $(this).val() * RECT_SIZE;
-});
+function watchMarkerModeChanges() {
+    $('input[name=marker-mode]').change(function () {
+        drawMode = parseInt($(this).val());
+    });
+}
 
-$('input[name=marker-type]').change(function () {
-    drawType = parseInt($(this).val());
-    if (drawType === DRAW_TYPE_RECT) {
-        $('.pen-settings').hide();
-    } else if (drawType === DRAW_TYPE_PEN) {
-        $('.pen-settings').show();
-    }
-});
+function watchKeyInputs() {
+    $('body').on('keypress', function (e) {
+        if (e.keyCode === 109) {
+            $('input[name=marker-mode]:not(:checked)').prop('checked', true).trigger('change');
+        } else if (e.keyCode === 116) {
+            $('input[name=marker-type]:not(:checked)').prop('checked', true).trigger('change');
+        }
+    })
+}
 
-$('input[name=marker-mode]').change(function () {
-    drawMode = parseInt($(this).val());
-});
-
-$('body').on('keypress', function (e) {
-    if (e.keyCode === 109) {
-        $('input[name=marker-mode]:not(:checked)').prop('checked', true).trigger('change');
-    } else if (e.keyCode === 116) {
-        $('input[name=marker-type]:not(:checked)').prop('checked', true).trigger('change');
-    }
-})
-
-
-$('#create-blacklist').click(function () {
-    let result = Object.keys(rects).map(function (key) {
-        return rects[key];
-    }).filter(el => !el.active).map(el => keyName(el.x, el.y)).join(', ');
-    $('input[name=motionblocks]').val(result);
-});
+function generateBlacklistOnFormSubmit() {
+    $('#create-blacklist').click(function () {
+        let result = Object.keys(rects).map(function (key) {
+            return rects[key];
+        }).filter(el => !el.active).map(el => keyName(el.x, el.y)).join(', ');
+        $('input[name=motionblocks]').val(result);
+    });
+}
 
 function drawRect(startX, startY, endX, endY, finish) {
     var x = calcPoint(startX), x2 = calcPoint(endX);
@@ -103,7 +125,6 @@ function drawRect(startX, startY, endX, endY, finish) {
         h *= -1;
     }
 
-
     if (finish) {
         drawRects(x, y, w / RECT_SIZE, h / RECT_SIZE)
     } else {
@@ -113,10 +134,7 @@ function drawRect(startX, startY, endX, endY, finish) {
         } else if (DRAW_MODE_REMOVE === drawMode) {
             ctx.clearRect(x, y, w, h);
         }
-
     }
-
-
 }
 
 function calcPoint(point) {
@@ -138,7 +156,7 @@ function drawRects(x, y, xCount, yCount) {
                 'y': y + (yOffset * RECT_SIZE)
             };
             let index = keyName(x / RECT_SIZE + xOffset, y / RECT_SIZE + yOffset);
-            let rect = rects[index]
+            let rect = rects[index];
             if (rect === undefined) {
                 continue;
             }
@@ -157,9 +175,11 @@ function drawRects(x, y, xCount, yCount) {
 
 function drawBlacklist() {
     ctx.clearRect(0, 0, 960, 540);
-    Object.keys(rects).map(key => rects[key]).filter(el => el.active).forEach(el => ctx.fillRect(el.x * RECT_SIZE, el.y * RECT_SIZE, RECT_SIZE, RECT_SIZE));
+    Object.keys(rects)
+        .map(key => rects[key])
+        .filter(el => el.active)
+        .forEach(el => ctx.fillRect(el.x * RECT_SIZE, el.y * RECT_SIZE, RECT_SIZE, RECT_SIZE));
 }
-
 
 function draw(startX, startY, endX, endY, finish) {
     if (drawType == DRAW_TYPE_PEN) {
@@ -169,46 +189,42 @@ function draw(startX, startY, endX, endY, finish) {
     }
 }
 
-
-var startX = 0, startY = 0, endX = 0, endY = 0;
-var active = false;
-var grid = $('.grid');
-
-
-grid.mousedown(function (e) {
-    active = true;
-    startX = e.offsetX;
-    startY = e.offsetY;
-});
-
-grid.mouseup(function (e) {
-    active = false;
-    endX = e.offsetX;
-    endY = e.offsetY;
-    draw(startX, startY, endX, endY, true);
-});
-
-grid.mouseout(function (e) {
-    if (active) {
-        active = false;
-        if (drawType == DRAW_TYPE_RECT) {
-            endX = e.offsetX;
-            endY = e.offsetY;
-            draw(startX, startY, endX, endY, true);
-        }
-    }
-});
-
-grid.mousemove(function (e) {
-    if (!active) {
-        return;
-    }
-    if (drawType === DRAW_TYPE_PEN) {
+function watchMouseEvents() {
+    grid.mousedown(function (e) {
+        active = true;
         startX = e.offsetX;
         startY = e.offsetY;
-    } else {
+    });
+
+    grid.mouseup(function (e) {
+        active = false;
         endX = e.offsetX;
         endY = e.offsetY;
-    }
-    draw(startX, startY, endX, endY, false);
-});
+        draw(startX, startY, endX, endY, true);
+    });
+
+    grid.mouseout(function (e) {
+        if (active) {
+            active = false;
+            if (drawType == DRAW_TYPE_RECT) {
+                endX = e.offsetX;
+                endY = e.offsetY;
+                draw(startX, startY, endX, endY, true);
+            }
+        }
+    });
+
+    grid.mousemove(function (e) {
+        if (!active) {
+            return;
+        }
+        if (drawType === DRAW_TYPE_PEN) {
+            startX = e.offsetX;
+            startY = e.offsetY;
+        } else {
+            endX = e.offsetX;
+            endY = e.offsetY;
+        }
+        draw(startX, startY, endX, endY, false);
+    });
+}
