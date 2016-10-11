@@ -7,17 +7,17 @@ import numpy
 
 
 class Blacklist(object):
-    logging.basicConfig(filename='/var/log/motiondetection.log', level=logging.DEBUG,
+    logging.basicConfig(filename='/var/log/motiondetection.log', level=logging.INFO,
                         format='%(asctime)s.%(msecs)d %(levelname)s - %(message)s',
                         datefmt="%Y-%m-%d %H:%M:%S")
 
-    threshold = 50
+    threshold = 10
     motion_score = 0
     motion_blocks = None
     last_motion_check = time.time()
 
-    def __init__(self, motion_score):
-        self.motion_score = motion_score
+    def __init__(self):
+        self.motion_score = int(os.getenv('MOTION_SCORE', '30'))
         blacklist_file = os.environ['MOTION_WEB'] + 'whitelist.txt'
         if os.path.exists(blacklist_file):
             whitelist = open(blacklist_file, mode='r')
@@ -55,6 +55,7 @@ class Blacklist(object):
         count = self.motion_block_count(filtered_array)
 
         if count < self.motion_score:
+            logging.debug('actual motion score %d', count)
             return False
 
         logging.info('motion detected. motion score: %d', count)

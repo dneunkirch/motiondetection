@@ -3,10 +3,11 @@
 import datetime
 import logging
 import os
-import picamera.array
 import threading
 import time
 from subprocess import call
+
+import picamera.array
 
 import blacklist
 
@@ -26,8 +27,7 @@ widht = 1920
 height = 1080
 
 sensor_mode = 2
-video_size_before_event = 2800000
-motion_score = 50
+seconds_before_event = 3
 bitrate = 3000000
 live_quality = 10
 motion_timeout = 0.5
@@ -51,9 +51,9 @@ live_timeout = int(os.getenv('MOTION_LIVE_REFRESH_INTERVAL_SECONDS', '5'))
 trigger_convert_cmd = 'bash ' + script_folder + 'convert_cron.sh'
 
 camera = picamera.PiCamera(framerate=day_settings.framerate, sensor_mode=sensor_mode, resolution=resolution)
-motion_blacklist = blacklist.Blacklist(motion_score=motion_score)
+motion_blacklist = blacklist.Blacklist()
 
-logging.basicConfig(filename='/var/log/motiondetection.log', level=logging.DEBUG,
+logging.basicConfig(filename='/var/log/motiondetection.log', level=logging.INFO,
                     format='%(asctime)s.%(msecs)d %(levelname)s - %(message)s',
                     datefmt="%Y-%m-%d %H:%M:%S")
 
@@ -88,7 +88,7 @@ def change_camera_settings(output, settings):
     camera.exposure_mode = settings.exposure_mode
     camera.shutter_speed = settings.shutter_speed
     camera.iso = settings.iso
-    new_stream = picamera.PiCameraCircularIO(camera, size=video_size_before_event, bitrate=bitrate, splitter_port=1)
+    new_stream = picamera.PiCameraCircularIO(camera, seconds=seconds_before_event, bitrate=bitrate, splitter_port=1)
     camera.start_recording(new_stream, format='h264', splitter_port=1, motion_output=output, bitrate=bitrate)
     camera.wait_recording(2)
     return new_stream
@@ -125,7 +125,7 @@ def check_for_camera_settings_switch(stream, output):
 
 def main():
     try:
-        logging.info('configure camera...')
+        logging.debug('configure camera...')
         camera.sharpness = int(os.getenv('MOTION_CAMERA_SHARPNESS', 20))
         camera.saturation = int(os.getenv('MOTION_CAMERA_SATURATION', 20))
         camera.rotation = int(os.getenv('MOTION_CAMERA_ROTATION', 0))
@@ -143,7 +143,7 @@ def main():
                 camera.wait_recording(motion_timeout)
                 if motion_detected:
                     motion_index += 1
-                    logging.info('new motion event')
+                    logging.debug('new motion event')
                     current_framerate = camera.framerate
                     filename_before = str(motion_index) + '_before_' + str(current_framerate) + '.h264'
                     filename_after = str(motion_index) + '_after_' + str(current_framerate) + '.h264'
@@ -163,6 +163,7 @@ def main():
                     camera.split_recording(stream)
                     os.rename(f1_temp, f1)
                     os.rename(f2_temp, f2)
+                    logging.debug('trigger convert shell script')
                     call(trigger_convert_cmd, shell=True)
     except Exception:
         logging.exception('caught exception')

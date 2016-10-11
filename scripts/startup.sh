@@ -11,8 +11,11 @@
 ### END INIT INFO
 
 scriptFolder=$(dirname "$(readlink -f "$0")")
-config=$(printf "%s/setup.sh" ${scriptFolder})
+setup=$(printf "%s/setup.sh" ${scriptFolder})
+config=$(printf "%s/configuration.sh" ${scriptFolder})
+source ${setup}
 source ${config}
+
 . /lib/lsb/init-functions
 
 PIDFILE="/var/run/motion_detection.pid"

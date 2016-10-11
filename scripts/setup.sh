@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 checkoutFolder="/etc/motiondetection" # without tailing slash
 webServerRoot="/var/www/html"         # without tailing slash
 webServerUser="www-data"              # without tailing slash
@@ -13,18 +12,6 @@ tempFolder=$(printf "%s/temp/" ${checkoutFolder})
 outputFolder=$(printf "%s/output/" ${checkoutFolder})
 failFolder=$(printf "%s/fail/" ${checkoutFolder})
 eventFolder=$(printf "%sevents/" ${webFolder})
-
-export MOTION_CAMERA_ROTATION=0
-export MOTION_CAMERA_SATURATION=20
-export MOTION_CAMERA_SHARPNESS=20
-
-export MOTION_NIGHT_MODE_ALLOWED="True"
-export MOTION_NIGHT_MODE_START_H=19
-export MOTION_NIGHT_MODE_START_M=30
-export MOTION_NIGHT_MODE_END_H=5
-export MOTION_NIGHT_MODE_END_M=30
-
-export MOTION_LIVE_REFRESH_INTERVAL_SECONDS=5
 
 export MOTION_SCRIPTS=${scriptFolder}
 export MOTION_PYTHON=${pythonFolder}
