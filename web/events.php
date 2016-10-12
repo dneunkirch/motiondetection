@@ -15,7 +15,8 @@ $json = "";
 $data = [];
 $uri = $_SERVER['REQUEST_URI'];
 $file = basename($_SERVER["SCRIPT_FILENAME"]);
-$path = preg_replace('/'.$file.'$/', '', $uri);
+$segments = parse_url($uri);
+$path = preg_replace('/'.$file.'$/', '', $segments['path']);
 if (substr($path, -1) != '/' ) {
   $path = "$path/";
 }
