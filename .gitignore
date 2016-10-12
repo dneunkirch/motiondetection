@@ -6,3 +6,4 @@
 /web/live
 python/blacklist.pyc
 web/whitelist.txt
+/web/events_*.cache
