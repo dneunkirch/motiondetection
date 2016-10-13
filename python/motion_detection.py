@@ -57,13 +57,10 @@ logging.basicConfig(filename='/var/log/motiondetection.log', level=logging.INFO,
                     format='%(asctime)s.%(msecs)d %(levelname)s - %(message)s',
                     datefmt="%Y-%m-%d %H:%M:%S")
 
-last_motion_detection = time.time()
-motion_count = 0
-
 
 class MotionDection(picamera.array.PiMotionAnalysis):
     def analyse(self, array):
-        global motion_detected, last_motion_detection, motion_count
+        global motion_detected
 
         if motion_detected:
             return
