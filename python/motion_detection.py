@@ -66,7 +66,7 @@ class MotionDection(picamera.array.PiMotionAnalysis):
         if motion_detected:
             return
 
-        threshold = 30 if waiting_for_motion_end else 50
+        threshold = 10 if waiting_for_motion_end else 40
         if motion_blacklist.has_motion(array=array, threshold=threshold):
             motion_detected = True
 
