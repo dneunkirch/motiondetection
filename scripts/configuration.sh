@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-export MOTION_SCORE=10
+export MOTION_SCORE_DAY=10
+export MOTION_SCORE_NIGHT=50
 
 export MOTION_CAMERA_ROTATION=0
 export MOTION_CAMERA_SATURATION=20

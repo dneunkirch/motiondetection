@@ -15,7 +15,6 @@ class Blacklist(object):
     last_motion_check = time.time()
 
     def __init__(self):
-        self.motion_score = int(os.getenv('MOTION_SCORE', '30'))
         blacklist_file = os.environ['MOTION_WEB'] + 'whitelist.txt'
         if os.path.exists(blacklist_file):
             whitelist = open(blacklist_file, mode='r')

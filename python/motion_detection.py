@@ -13,15 +13,22 @@ import blacklist
 
 
 class CameraSettings:
-    def __init__(self, framerate, exposure_mode='auto', shutter_speed=0, iso=0):
+    def __init__(self, framerate, motion_score, exposure_mode='auto', shutter_speed=0, iso=0):
         self.framerate = framerate
         self.exposure_mode = exposure_mode
         self.shutter_speed = shutter_speed
         self.iso = iso
+        self.motion_score = motion_score
 
 
-night_settings = CameraSettings(framerate=2, exposure_mode='off', shutter_speed=500000, iso=1600)
-day_settings = CameraSettings(framerate=15)
+night_settings = CameraSettings(framerate=2,
+                                motion_score=int(os.getenv('MOTION_SCORE_NIGHT', '100')),
+                                exposure_mode='off',
+                                shutter_speed=500000,
+                                iso=1600)
+
+day_settings = CameraSettings(framerate=15,
+                              motion_score=int(os.getenv('MOTION_SCORE_DAY', '10')))
 
 widht = 1920
 height = 1080
@@ -87,6 +94,7 @@ def change_camera_settings(output, settings):
     camera.exposure_mode = settings.exposure_mode
     camera.shutter_speed = settings.shutter_speed
     camera.iso = settings.iso
+    motion_blacklist.motion_score = settings.motion_score
     new_stream = picamera.PiCameraCircularIO(camera, seconds=seconds_before_event, bitrate=bitrate, splitter_port=1)
     camera.start_recording(new_stream, format='h264', splitter_port=1, motion_output=output, bitrate=bitrate)
     camera.wait_recording(2)
