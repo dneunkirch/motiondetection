@@ -33,6 +33,7 @@ live_quality = 10
 motion_timeout = 0.5
 night_mode_active = False
 motion_detected = False
+waiting_for_motion_end = False
 resolution = (widht, height)
 
 temp_folder = os.environ['MOTION_TEMP']
@@ -60,12 +61,13 @@ logging.basicConfig(filename='/var/log/motiondetection.log', level=logging.INFO,
 
 class MotionDection(picamera.array.PiMotionAnalysis):
     def analyse(self, array):
-        global motion_detected
+        global motion_detected, waiting_for_motion_end
 
         if motion_detected:
             return
 
-        if motion_blacklist.has_motion(array=array):
+        threshold = 30 if waiting_for_motion_end else 50
+        if motion_blacklist.has_motion(array=array, threshold=threshold):
             motion_detected = True
 
 
@@ -126,7 +128,7 @@ def main():
         camera.sharpness = int(os.getenv('MOTION_CAMERA_SHARPNESS', 20))
         camera.saturation = int(os.getenv('MOTION_CAMERA_SATURATION', 20))
         camera.rotation = int(os.getenv('MOTION_CAMERA_ROTATION', 0))
-        global motion_detected
+        global motion_detected, waiting_for_motion_end
         with MotionDection(camera) as output:
             stream = change_camera_settings(output, day_settings)
             update_live_pic()
@@ -139,6 +141,7 @@ def main():
                 stream = check_for_camera_settings_switch(stream, output)
                 camera.wait_recording(motion_timeout)
                 if motion_detected:
+                    waiting_for_motion_end = True
                     motion_index += 1
                     logging.debug('new motion event')
                     current_framerate = camera.framerate
@@ -157,6 +160,7 @@ def main():
                         motion_detected = False
                         camera.wait_recording(5)
 
+                    waiting_for_motion_end = False
                     camera.split_recording(stream)
                     os.rename(f1_temp, f1)
                     os.rename(f2_temp, f2)

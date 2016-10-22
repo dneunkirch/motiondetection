@@ -10,8 +10,6 @@ class Blacklist(object):
     logging.basicConfig(filename='/var/log/motiondetection.log', level=logging.INFO,
                         format='%(asctime)s.%(msecs)d %(levelname)s - %(message)s',
                         datefmt="%Y-%m-%d %H:%M:%S")
-
-    threshold = 50
     motion_score = 0
     motion_blocks = None
     last_motion_check = time.time()
@@ -32,10 +30,11 @@ class Blacklist(object):
                 motion_blocks.append(point)
             self.motion_blocks = motion_blocks
 
-    def motion_block_count(self, array):
+    @staticmethod
+    def motion_block_count(array, threshold):
         return (numpy.sqrt(
             numpy.square(array['x'].astype(numpy.float)) +
-            numpy.square(array['y'].astype(numpy.float))).clip(0, 255).astype(numpy.uint8) > self.threshold).sum()
+            numpy.square(array['y'].astype(numpy.float))).clip(0, 255).astype(numpy.uint8) > threshold).sum()
 
     def filter_array(self, array):
         if not self.motion_blocks:
@@ -45,14 +44,14 @@ class Blacklist(object):
             filtered_array.append(array[motion_block])
         return numpy.array(filtered_array)
 
-    def has_motion(self, array):
+    def has_motion(self, array, threshold):
         now = time.time()
         if (now - self.last_motion_check) < 0.5:
             return False
         self.last_motion_check = now
 
         filtered_array = self.filter_array(array)
-        count = self.motion_block_count(filtered_array)
+        count = self.motion_block_count(filtered_array, threshold)
 
         if count < self.motion_score:
             logging.debug('actual motion score %d', count)
