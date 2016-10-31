@@ -191,7 +191,7 @@ def has_motion():
     if motion:
         logging.info('motion detected with score %d', diff)
     else:
-        logging.info('actual motion score %d', diff)
+        logging.debug('actual motion score %d', diff)
     return motion
 
 
