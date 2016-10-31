@@ -20,7 +20,7 @@ body {
 }
 
 .grid {
-    background-size: 8px 8px;
+    background-size: 5px 5px;
     background-image: linear-gradient(to right, #ccc 1px, transparent 1px),
     linear-gradient(to bottom, #ccc 1px, transparent 1px);
     border-right: 1px solid #ccc;

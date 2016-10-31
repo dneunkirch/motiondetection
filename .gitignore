@@ -5,5 +5,5 @@
 /web/events
 /web/live
 python/blacklist.pyc
-web/whitelist.txt
+web/roi.txt
 /web/events_*.cache
