@@ -103,7 +103,7 @@ def change_camera_settings(settings):
         total_pixels = temp_width * temp_height
 
     motion_score = int(total_pixels / 100 * settings.percentage_changed)
-    logging.debug('motion_score %d', motion_score)
+    logging.info('detect motion with motion_score %d', motion_score)
     return new_stream
 
 
@@ -179,7 +179,7 @@ def capture_temp_image():
     image_array = numpy.asarray(image)
     if not has_roi:
         return image_array[::, ::, 1]
-    return image_array[roi_y, roi_x, 1]
+    return image_array[roi_x, roi_y, 1]
 
 
 def has_motion():
