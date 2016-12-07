@@ -114,7 +114,7 @@ def check_for_camera_settings_switch(stream):
     global night_mode_active, last_mode_check
 
     now = datetime.datetime.now()
-    if (now - last_mode_check).seconds > 300:
+    if (now - last_mode_check).seconds < 300:
         return stream
 
     last_mode_check = now
