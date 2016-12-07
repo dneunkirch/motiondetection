@@ -13,7 +13,10 @@ export MOTION_LOCATION_LONGITUDE="-115.79302"
 
 export MOTION_LIVE_REFRESH_INTERVAL_SECONDS=5
 
-if [ -f local_configuration.sh ]
+scriptFolder=$(dirname "$(readlink -f "$0")")
+localConfig=$(printf "%s/local_configuration.sh" ${scriptFolder})
+
+if [ -f ${localConfig} ]
 then
-    bash local_configuration.sh
+    source ${localConfig}
 fi
