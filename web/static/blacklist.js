@@ -4,7 +4,7 @@ const DRAW_TYPE_PEN = 1;
 const DRAW_TYPE_RECT = 2;
 const DRAW_MODE_ADD = 1;
 const DRAW_MODE_REMOVE = 2;
-const RECT_SIZE = 8;
+const RECT_SIZE = 5;
 const MOTION_BLOCK_REGEX = new RegExp("([0-9]+),([0-9]+)");
 
 var penStrength = 40;
@@ -30,7 +30,16 @@ generateBlacklistOnFormSubmit();
 
 
 function displayCurrentBlacklist() {
-    $('#blacklist').data('current').split(', ').forEach((el) => {
+    let blacklist = $('#blacklist');
+    let currentBlacklist = blacklist.data('current');
+    let hasBlacklist = blacklist.data('exists');
+    if (!hasBlacklist || currentBlacklist === '') {
+        $.map(rects, function (rect) {
+            rect.active = false;
+        })
+        return;
+    }
+    currentBlacklist.split(', ').forEach((el) => {
         let match = MOTION_BLOCK_REGEX.exec(el);
         if (match) {
             let y = match[1];
@@ -43,8 +52,8 @@ function displayCurrentBlacklist() {
 }
 
 function prepareData() {
-    for (var x = 0; x < 120; x++) {
-        for (var y = 0; y < 68; y++) {
+    for (var x = 0; x < 960 / RECT_SIZE; x++) {
+        for (var y = 0; y < 540 / RECT_SIZE; y++) {
             rects[keyName(x, y)] = {
                 'active': true,
                 'x': x,

@@ -1,7 +1,7 @@
 <?php
     $motionblocks = $_POST['motionblocks'];
     if( isset($motionblocks) ) {
-       $file = fopen("whitelist.txt", "w");
+       $file = fopen("roi.txt", "w");
        fwrite($file, $motionblocks);
        fclose($file);
        header('Location: blacklist.php');
@@ -19,7 +19,7 @@
 
 <div class="container">
     <div class="image"></div>
-    <canvas id="blacklist" width="960" height="540" data-current='<?= $result = file_get_contents("whitelist.txt"); ?>'></canvas>
+    <canvas id="blacklist" width="960" height="540" data-exists='<?= file_exists("roi.txt"); ?>' data-current='<?= file_get_contents("roi.txt"); ?>'></canvas>
     <div class="grid"></div>
 </div>
 
