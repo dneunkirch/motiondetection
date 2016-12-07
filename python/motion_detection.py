@@ -58,7 +58,7 @@ live_folder = os.environ['MOTION_LIVE']
 script_folder = os.environ['MOTION_SCRIPTS']
 
 night_mode_allowed = os.getenv('MOTION_NIGHT_MODE_ALLOWED', 'True') == 'True'
-last_mode_check = None
+last_mode_check = datetime.datetime.min
 latitude = os.getenv('MOTION_LOCATION_LATITUDE', '0.0')
 longitude = os.getenv('MOTION_LOCATION_LONGITUDE', '0.0')
 
@@ -114,7 +114,7 @@ def check_for_camera_settings_switch(stream):
     global night_mode_active, last_mode_check
 
     now = datetime.datetime.now()
-    if last_mode_check is not None and (now - last_mode_check).seconds > 300:
+    if (now - last_mode_check).seconds > 300:
         return stream
 
     last_mode_check = now
