@@ -2,8 +2,10 @@
 /*/*.iml
 /output
 /temp
+/fail
 /web/events
 /web/live
 python/blacklist.pyc
-web/whitelist.txt
+web/roi.txt
 /web/events_*.cache
+/scripts/local_configuration.sh
