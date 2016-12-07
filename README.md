@@ -25,7 +25,8 @@ Instructions for an installation on Raspbian Jessie Lite
 - **Install dependencies** 
 
 ```bash
-sudo apt-get install python-picamera python-numpy python-imaging gpac libav-tools imagemagick git
+sudo apt-get install python-picamera python-imaging gpac libav-tools imagemagick git python-pip
+sudo pip install pyephem numpy
 ```
 
 - **If you don't have a webserver with PHP** *(optional)* **:**

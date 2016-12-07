@@ -10,6 +10,7 @@ import time
 from subprocess import call
 
 import Image
+import ephem
 import numpy
 import picamera.array
 
@@ -57,10 +58,9 @@ live_folder = os.environ['MOTION_LIVE']
 script_folder = os.environ['MOTION_SCRIPTS']
 
 night_mode_allowed = os.getenv('MOTION_NIGHT_MODE_ALLOWED', 'True') == 'True'
-night_mode_start_h = int(os.getenv('MOTION_NIGHT_MODE_START_H', '19'))
-night_mode_start_m = int(os.getenv('MOTION_NIGHT_MODE_START_M', '30'))
-night_mode_end_h = int(os.getenv('MOTION_NIGHT_MODE_END_H', '5'))
-night_mode_end_m = int(os.getenv('MOTION_NIGHT_MODE_END_M', '30'))
+last_mode_check = None
+latitude = os.getenv('MOTION_LOCATION_LATITUDE', '0.0')
+longitude = os.getenv('MOTION_LOCATION_LONGITUDE', '0.0')
 
 live_timeout = int(os.getenv('MOTION_LIVE_REFRESH_INTERVAL_SECONDS', '5'))
 
@@ -111,27 +111,30 @@ def check_for_camera_settings_switch(stream):
     if not night_mode_allowed:
         return stream
 
-    global night_mode_active
+    global night_mode_active, last_mode_check
 
     now = datetime.datetime.now()
-    start = now.replace(hour=night_mode_start_h, minute=night_mode_start_m)
-    end = now.replace(hour=night_mode_end_h, minute=night_mode_end_m)
+    if last_mode_check is not None and (now - last_mode_check).seconds > 300:
+        return stream
 
-    if night_mode_start_h > night_mode_end_h:
-        if now.hour < night_mode_start_h:
-            start = start - datetime.timedelta(days=1)
-        else:
-            end = end + datetime.timedelta(days=1)
+    last_mode_check = now
 
-    if start < now < end:
-        if not night_mode_active:
-            logging.info('activate night mode')
-            night_mode_active = True
-            return change_camera_settings(night_settings)
-    elif night_mode_active:
-        logging.info('activate day mode')
-        night_mode_active = False
-        return change_camera_settings(day_settings)
+    location = ephem.Observer()
+    location.horizon = '-6'
+    location.lat, location.long = latitude, longitude
+
+    sunrise = location.next_rising(ephem.Sun())
+    sunset = location.next_setting(ephem.Sun())
+
+    if sunset < sunrise:
+        if night_mode_active:
+            logging.info('activate day mode')
+            night_mode_active = False
+            return change_camera_settings(day_settings)
+    elif not night_mode_active:
+        logging.info('activate night mode')
+        night_mode_active = True
+        return change_camera_settings(night_settings)
 
     return stream
 

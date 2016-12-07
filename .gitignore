@@ -8,3 +8,4 @@
 python/blacklist.pyc
 web/roi.txt
 /web/events_*.cache
+/scripts/local_configuration.sh
