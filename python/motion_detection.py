@@ -476,12 +476,11 @@ if __name__ == '__main__':
 
     directory = os.path.dirname(__file__)
 
-    roi_file = os.path.join(directory, '/roi.txt')
-    output_folder = os.path.join(directory, '/unconverted/')
-    fail_folder = os.path.join(directory, '/unconverted_fail/')
-    event_folder = os.path.join(directory, '/events/')
-    temp_folder = os.path.join(directory, '/temp/')
-
+    roi_file = os.path.join(directory, 'roi.txt')
+    output_folder = os.path.join(directory, 'unconverted/')
+    fail_folder = os.path.join(directory, 'unconverted_fail/')
+    event_folder = os.path.join(directory, 'events/')
+    temp_folder = os.path.join(directory, 'temp/')
     convert_script = os.path.join(directory, '/../scripts/convert_cron.sh')
 
     if not os.path.exists(output_folder):
