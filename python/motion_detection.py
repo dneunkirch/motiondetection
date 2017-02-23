@@ -270,10 +270,10 @@ class MotionDetection(object):
                 current_framerate = camera.framerate
                 filename_before = str(self.motion_index) + '_before_' + str(current_framerate) + '.h264'
                 filename_after = str(self.motion_index) + '_after_' + str(current_framerate) + '.h264'
-                f1_temp = temp_folder + filename_before
-                f2_temp = temp_folder + filename_after
-                f1 = output_folder + filename_before
-                f2 = output_folder + filename_after
+                f1_temp = os.path.join(temp_folder, filename_before)
+                f2_temp = os.path.join(temp_folder, filename_after)
+                f1 = os.path.join(output_folder, filename_before)
+                f2 = os.path.join(output_folder, filename_after)
 
                 camera.split_recording(f2_temp)
                 self.motion_stream.copy_to(f1_temp)
@@ -477,11 +477,11 @@ if __name__ == '__main__':
     motion_score = None
 
     roi_file = os.path.join(directory, 'roi.txt')
-    output_folder = os.path.join(directory, 'unconverted/')
-    fail_folder = os.path.join(directory, 'unconverted_fail/')
-    event_folder = os.path.join(directory, 'events/')
-    temp_folder = os.path.join(directory, 'temp/')
-    convert_script = os.path.join(directory, '../scripts/') + 'convert_cron.sh'
+    output_folder = os.path.join(directory, 'unconverted')
+    fail_folder = os.path.join(directory, 'unconverted_fail')
+    event_folder = os.path.join(directory, 'events')
+    temp_folder = os.path.join(directory, 'temp')
+    convert_script = os.path.join(directory, '../scripts', 'convert_cron.sh')
 
     if not os.path.exists(output_folder):
         os.mkdir(output_folder)
