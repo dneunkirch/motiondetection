@@ -13,7 +13,7 @@ dateString=`date -r ${eventPart1} +%Y-%m-%d_%H-%M-%S`
 video=$(printf "%s%s.mp4" ${temp} ${dateString})
 timestamp=$(date +%s%N)
 previewImage=$(printf "%s%s.jpg" ${temp} ${timestamp})
-previewImageX640=$(printf "%s%s_640x360.jpg" ${events} ${dateString})
+previewImageX640=$(printf "%s%s.jpg" ${events} ${dateString})
 
 if [ -s ${eventPart1} ]
 then

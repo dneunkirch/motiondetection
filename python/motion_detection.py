@@ -148,13 +148,13 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             for video in videos:
                 if not video.endswith('.mp4'):
                     continue
+                video_file = os.path.join(event_folder, video)
                 events.append({'video': video,
-                               'size': os.stat(event_folder + video).st_size,
+                               'size': os.stat(video_file).st_size,
                                'date': video[:19],
                                'duration': int(video[20:][:-4]),
                                'poster': video[:19] + '.jpg'
                                })
-        # TODO: send cache and last modified headers
         self.serve_json(payload=events)
 
     def serve_json(self, payload):
