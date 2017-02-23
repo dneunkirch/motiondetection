@@ -24,8 +24,8 @@ NAME="Motion-Detection"
 case "$1" in
 
 start)
-convertCron=$(printf "* * * * * bash  %sconvert_cron.sh > /dev/null 2>&1" ${scriptFolder})
-cleanupEventCron=$(printf "0 6 * * * bash  %sevent_folder_cleanup.sh > /dev/null 2>&1" ${scriptFolder})
+convertCron=$(printf "* * * * * bash  %s/convert_cron.sh > /dev/null 2>&1" ${scriptFolder})
+cleanupEventCron=$(printf "0 6 * * * bash  %s/event_folder_cleanup.sh > /dev/null 2>&1" ${scriptFolder})
 
 (crontab -l ; echo "$convertCron") | sort - | uniq - | crontab -
 (crontab -l ; echo "$cleanupEventCron") | sort - | uniq - | crontab -
