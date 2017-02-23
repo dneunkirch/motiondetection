@@ -11,6 +11,7 @@ import re
 import threading
 import time
 from base64 import b64encode
+from subprocess import call
 from threading import Condition
 
 import Image
@@ -164,7 +165,6 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def serve_file(self, filename, content_type):
         f = open(filename, 'rb')
-        print filename
         if 'Range' in self.headers:
             self.send_response(206)
         else:
@@ -287,6 +287,7 @@ class MotionDetection(object):
                 os.rename(f1_temp, f1)
                 os.rename(f2_temp, f2)
                 print 'motion event stopped'
+                call('bash ../scripts/convert_cron.sh', shell=True)
         camera.stop_recording(splitter_port=self.motion_port)
 
     def stop(self):
