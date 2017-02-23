@@ -1,11 +1,8 @@
 /.idea/*
 /*/*.iml
-/output
-/temp
-/fail
-/web/events
-/web/live
-python/blacklist.pyc
-web/roi.txt
-/web/events_*.cache
-/scripts/local_configuration.sh
+python/unconverted/*
+python/unconverted_fail/*
+python/events/*
+python/temp/*
+python/config.ini
+python/roi.txt
