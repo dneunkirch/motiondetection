@@ -14,8 +14,10 @@ scriptFolder=$(dirname "$(readlink -f "$0")")
 
 . /lib/lsb/init-functions
 
+pythonFolder=$(printf "%s../python/" ${scriptFolder})
+
 PIDFILE="/var/run/motion_detection.pid"
-DAEMON=$(printf "%smotion_detection.py" ${MOTION_PYTHON})
+DAEMON=$(printf "%smotion_detection.py" ${pythonFolder})
 NAME="Motion-Detection"
 
 
