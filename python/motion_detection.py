@@ -10,6 +10,7 @@ import os
 import re
 import threading
 import time
+from base64 import b64encode
 from threading import Condition
 
 import Image
@@ -50,14 +51,17 @@ class StreamingOutput(object):
 
 class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def is_authenticated(self):
-        return False
+        if not ('Authorization' in self.headers):
+            return False
+        authorization = self.headers['Authorization']
+        return authorization in authorities
 
     def do_GET(self):
         global force_motion, camera_settings, events
 
         if not self.is_authenticated():
             self.send_response(401)
-            self.send_header('WWW-Authenticate', 'Basic realm="protected"')
+            self.send_header('WWW-Authenticate', 'Basic realm="Test"')
             return
 
         if self.path == '/live.mjpeg':
@@ -435,14 +439,20 @@ def setup_default_configuration():
         config.write(configfile)
 
 
+def setup_users():
+    for username in config.options('users'):
+        password = config.get('users', username)
+        authorities.append('Basic ' + b64encode(username + ':' + password))
+
+
 if __name__ == '__main__':
     print 'started'
 
     config = ConfigParser.ConfigParser()
     config.read('config.ini')
-
+    authorities = []
     setup_default_configuration()
-
+    setup_users()
     night_mode_allowed = config.getboolean(section='motion_detection', option='night_mode_allowed')
     latitude = config.getfloat(section='location', option='latitude')
     longitude = config.getfloat(section='location', option='longitude')
