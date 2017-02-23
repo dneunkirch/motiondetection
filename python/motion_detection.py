@@ -436,7 +436,7 @@ def setup_default_configuration():
     write_default_value(section='camera', option='rotation', value='0')
     write_default_value(section='users', option='username', value='password')
 
-    with open('config.ini', mode='w') as configfile:
+    with open(config_file, mode='w') as configfile:
         config.write(configfile)
 
 
@@ -448,9 +448,11 @@ def setup_users():
 
 if __name__ == '__main__':
     print 'started'
+    directory = os.path.dirname(__file__)
 
+    config_file = os.path.join(directory, 'config.ini')
     config = ConfigParser.ConfigParser()
-    config.read('config.ini')
+    config.read(config_file)
     authorities = []
     setup_default_configuration()
     setup_users()
@@ -473,8 +475,6 @@ if __name__ == '__main__':
     roi_x = None
     roi_y = None
     motion_score = None
-
-    directory = os.path.dirname(__file__)
 
     roi_file = os.path.join(directory, 'roi.txt')
     output_folder = os.path.join(directory, 'unconverted/')
