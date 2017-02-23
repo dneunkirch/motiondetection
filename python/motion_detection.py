@@ -287,7 +287,7 @@ class MotionDetection(object):
                 os.rename(f1_temp, f1)
                 os.rename(f2_temp, f2)
                 print 'motion event stopped'
-                call('bash ../scripts/convert_cron.sh', shell=True)
+                call('bash ' + convert_script, shell=True)
         camera.stop_recording(splitter_port=self.motion_port)
 
     def stop(self):
@@ -473,11 +473,16 @@ if __name__ == '__main__':
     roi_x = None
     roi_y = None
     motion_score = None
-    roi_file = 'roi.txt'
-    output_folder = 'unconverted/'
-    fail_folder = 'unconverted_fail/'
-    event_folder = 'events/'
-    temp_folder = 'temp/'
+
+    directory = os.path.dirname(__file__)
+
+    roi_file = os.path.join(directory, '/roi.txt')
+    output_folder = os.path.join(directory, '/unconverted/')
+    fail_folder = os.path.join(directory, '/unconverted_fail/')
+    event_folder = os.path.join(directory, '/events/')
+    temp_folder = os.path.join(directory, '/temp/')
+
+    convert_script = os.path.join(directory, '/../scripts/convert_cron.sh')
 
     if not os.path.exists(output_folder):
         os.mkdir(output_folder)
