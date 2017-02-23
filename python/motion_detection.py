@@ -142,14 +142,14 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def show_events(self):
         global events
-        if not events:
+        if not events or True:  # TODO remove
             events = []
             videos = os.listdir(event_folder)
             for video in videos:
                 if not video.endswith('.mp4'):
                     continue
                 video_file = os.path.join(event_folder, video)
-                events.append({'video': video,
+                events.append({'video': '/' + video,
                                'size': os.stat(video_file).st_size,
                                'date': video[:19],
                                'duration': int(video[20:][:-4]),
