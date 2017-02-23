@@ -481,7 +481,7 @@ if __name__ == '__main__':
     fail_folder = os.path.join(directory, 'unconverted_fail/')
     event_folder = os.path.join(directory, 'events/')
     temp_folder = os.path.join(directory, 'temp/')
-    convert_script = os.path.join(directory, '../scripts/convert_cron.sh')
+    convert_script = os.path.join(directory, '../scripts/').join('convert_cron.sh')
 
     if not os.path.exists(output_folder):
         os.mkdir(output_folder)
