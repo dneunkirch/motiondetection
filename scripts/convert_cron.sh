@@ -2,8 +2,8 @@
 
 
 scriptFolder=$(dirname "$(readlink -f "$0")")
-unconvertedFolder=$(printf "%s../python/unconverted/" ${scriptFolder})
-failFolder=$(printf "%s../python/unconverted_fail/" ${scriptFolder})
+unconvertedFolder=$(printf "%s/../python/unconverted/" ${scriptFolder})
+failFolder=$(printf "%s/../python/unconverted_fail/" ${scriptFolder})
 
 source=$(printf "%s*_before_*.h264" ${unconvertedFolder})
 convertScript=$(printf "%sconvert.sh" ${scriptFolder})

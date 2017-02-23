@@ -6,8 +6,8 @@ eventPart2=$2
 framerate=$3
 
 scriptFolder=$(dirname "$(readlink -f "$0")")
-events=$(printf "%s../python/events/" ${scriptFolder})
-temp=$(printf "%s../python/temp/" ${scriptFolder})
+events=$(printf "%s/../python/events/" ${scriptFolder})
+temp=$(printf "%s/../python/temp/" ${scriptFolder})
 
 dateString=`date -r ${eventPart1} +%Y-%m-%d_%H-%M-%S`
 video=$(printf "%s%s.mp4" ${temp} ${dateString})
