@@ -153,7 +153,7 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                                'size': os.stat(video_file).st_size,
                                'date': video[:19],
                                'duration': int(video[20:][:-4]),
-                               'poster': video[:19] + '.jpg'
+                               'poster': '/' + video[:19] + '.jpg'
                                })
         self.serve_json(payload=events)
 
