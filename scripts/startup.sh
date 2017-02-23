@@ -11,10 +11,6 @@
 ### END INIT INFO
 
 scriptFolder=$(dirname "$(readlink -f "$0")")
-setup=$(printf "%s/setup.sh" ${scriptFolder})
-config=$(printf "%s/configuration.sh" ${scriptFolder})
-source ${setup}
-source ${config}
 
 . /lib/lsb/init-functions
 
@@ -22,46 +18,14 @@ PIDFILE="/var/run/motion_detection.pid"
 DAEMON=$(printf "%smotion_detection.py" ${MOTION_PYTHON})
 NAME="Motion-Detection"
 
-function createSymlink {
-    if [ -L ${2} ] ; then
-       if [ ! -e ${2} ] ; then
-         exit 1
-       fi
-    elif [ -e ${2} ] ; then
-       exit 1
-    else
-       ln -s $1 $2
-    fi
-}
-
-function createFolder {
-    [ -d "$1" ] || mkdir -p $1
-}
 
 case "$1" in
 
 start)
-createFolder ${MOTION_TEMP}
-createFolder ${MOTION_OUTPUT}
-createFolder ${MOTION_FAIL}
-createFolder ${MOTION_EVENT}
-createFolder ${MOTION_LIVE}
-
-
-webServerLink=$(printf "%s/motion" ${MOTION_WEB_ROOT})
-liveFolderLink=$(printf "%slive" ${MOTION_WEB})
-createSymlink ${MOTION_WEB} ${webServerLink}
-createSymlink ${MOTION_LIVE} ${liveFolderLink}
-
-chown ${MOTION_WEB_USER} ${MOTION_WEB}
-chmod 777 ${MOTION_EVENT}
-
 convertCron=$(printf "* * * * * bash  %sconvert_cron.sh > /dev/null 2>&1" ${scriptFolder})
-cleanupLiveCron=$(printf "*/2 * * * * bash  %slive_folder_cleanup.sh > /dev/null 2>&1" ${scriptFolder})
 cleanupEventCron=$(printf "0 6 * * * bash  %sevent_folder_cleanup.sh > /dev/null 2>&1" ${scriptFolder})
 
 (crontab -l ; echo "$convertCron") | sort - | uniq - | crontab -
-(crontab -l ; echo "$cleanupLiveCron") | sort - | uniq - | crontab -
 (crontab -l ; echo "$cleanupEventCron") | sort - | uniq - | crontab -
 
 log_daemon_msg "Starting $NAME"
