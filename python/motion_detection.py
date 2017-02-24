@@ -65,7 +65,7 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.send_header('WWW-Authenticate', 'Basic realm="Test"')
             return
 
-        if self.path == '/live.mjpeg':
+        if self.path == '/live' or self.path == '/live.mjpeg':
             self.stream_mjpeg()
 
         elif self.path == '/live.jpg':
@@ -74,11 +74,6 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         elif self.path == '/events':
             self.show_events()
-
-        elif self.path == '/live':
-            payload = {'stream': '/live.mjpeg',
-                       'static': '/live.jpg'}
-            self.serve_json(payload=payload)
 
         elif self.path.endswith('.mp4') and os.path.exists(event_folder + self.path):
             self.serve_file(filename=event_folder + self.path, content_type='video/mp4')
