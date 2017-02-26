@@ -52,6 +52,8 @@ class StreamingOutput(object):
 
 class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def is_authenticated(self):
+        if not basic_auth:
+            return True
         if not ('Authorization' in self.headers):
             return False
         authorization = self.headers['Authorization']
@@ -293,7 +295,7 @@ class MotionDetection(object):
 
 
 class Server(object):
-    def __init__(self, webserver_port=8080):
+    def __init__(self):
         self.server = StreamingServer(('', webserver_port), StreamingHandler)
         self.start()
 
@@ -429,6 +431,9 @@ def setup_default_configuration():
     write_default_value(section='camera', option='saturation', value='20')
     write_default_value(section='camera', option='sharpness', value='20')
     write_default_value(section='camera', option='rotation', value='0')
+    write_default_value(section='webserver', option='port', value='8080')
+    write_default_value(section='basic_auth', option='enabled', value='True')
+
     if not config.has_section('users'):
         write_default_value(section='users', option='username', value='password')
 
@@ -457,6 +462,8 @@ if __name__ == '__main__':
     longitude = config.getfloat(section='location', option='longitude')
     day_settings = CameraSettings(framerate=15, percentage_changed=0.4)
     night_settings = CameraSettings(framerate=5, percentage_changed=1, exposure_mode='off', shutter_speed=200000, iso=1600)
+    webserver_port = config.getint(section='webserver', option='port')
+    basic_auth = config.getboolean(section='basic_auth', option='enabled')
 
     last_mode_check = datetime.datetime.min
     night_mode_active = False
