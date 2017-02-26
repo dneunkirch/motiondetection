@@ -58,7 +58,13 @@ Now you're able to start/stop the motion detection with the command `sudo servic
 ###URLs
 
 The port (default: `8080`) and credentials (default: `username`, `password`) can be changed in the config file. You're able to add multiple users in the `users` section or even turn the basic authorization off.
+  
+- **Live MJPEG stream `/live` or `/live.mjpeg`**
+- **Current live picture `/live.jpg`**
+- **Exclude areas from motion detection `/blacklist`**
+- **Delete an event `/delete?file=filename_of_video.mp4`**
 
+    A GET request to this endpoint deletes the given video including his preview image.
 - **Captured Videos `/events`**
 
     Returns an array of all captured videos as following object:
@@ -72,24 +78,15 @@ The port (default: `8080`) and credentials (default: `username`, `password`) can
       "duration": 10                    // duration of video in seconds
     }
     ```
-  
-- **Live MJPEG stream `/live` or `/live.mjpeg`**
-- **Current live picture `/live.jpg`**
-- **Delete an event `/delete?file=filename_of_video.mp4`**
-
-    A GET request to this endpoint deletes the given video including his preview image.
-
-- **Exclude areas from motion detection `/blacklist`**
 
 ####For testing and debugging
 
 - **Fake Motion `/force_motion`**
 - **Stop Faking Motion `/stop_force_motion`**
+- **Activate Daymode `/daymode`**
 - **Activate Nightmode `/nightmode`**
 
     Works only if `night_mode_allowed` in the config is `True`
-
-- **Activate Daymode `/daymode`**
 
 ---
 
