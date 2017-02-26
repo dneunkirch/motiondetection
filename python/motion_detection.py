@@ -429,7 +429,8 @@ def setup_default_configuration():
     write_default_value(section='camera', option='saturation', value='20')
     write_default_value(section='camera', option='sharpness', value='20')
     write_default_value(section='camera', option='rotation', value='0')
-    write_default_value(section='users', option='username', value='password')
+    if not config.has_section('users'):
+        write_default_value(section='users', option='username', value='password')
 
     with open(config_file, mode='w') as configfile:
         config.write(configfile)
