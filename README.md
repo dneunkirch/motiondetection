@@ -57,68 +57,39 @@ Now you're able to start/stop the motion detection with the command `sudo servic
 
 ###URLs
 
-The port and credentials can be changed in the config file. You're able to add multiple users in the `users` section or even turn the basic authorization off.
+The port (default: `8080`) and credentials (default: `username`, `password`) can be changed in the config file. You're able to add multiple users in the `users` section or even turn the basic authorization off.
 
-default port: `8080`
+- **Captured Videos `/events`**
 
-default user: `username`
+    Returns an array of all captured videos as following object:
 
-default password: `password`
+    ```js
+    {
+      "date": "yyyy-MM-dd_HH-mm-ss",    // date of video
+      "video": "/events/video.mp4",     // path to video
+      "poster": "/events/preview.jpg",  // path to preview image
+      "size": 1000000,                  // size of video in bytes
+      "duration": 10                    // duration of video in seconds
+    }
+    ```
+  
+- **Live MJPEG stream `/live` or `/live.mjpeg`**
+- **Current live picture `/live.jpg`**
+- **Delete an event `/delete?file=filename_of_video.mp4`**
 
+    A GET request to this endpoint deletes the given video including his preview image.
 
+- **Exclude areas from motion detection `/blacklist`**
 
+####For testing and debugging
 
-####Captured Videos
-`/events`
+- **Fake Motion `/force_motion`**
+- **Stop Faking Motion `/stop_force_motion`**
+- **Activate Nightmode `/nightmode`**
 
+    Works only if `night_mode_allowed` in the config is `True`
 
-Returns an array of all captured videos as following object:
-
-```js
-{
-  "date": "yyyy-MM-dd_HH-mm-ss",    // date of video
-  "video": "/events/video.mp4",     // path to video
-  "poster": "/events/preview.jpg",  // path to preview image
-  "size": 1000000,                  // size of video in bytes
-  "duration": 10                    // duration of video in seconds
-}
-```
-With the request-parameter previewImageSize (default: 640x360) you're able to control the preview image resolution (e.g. /events.php?previewImageSize=320x180).  
-
-
-####Live MJPEG stream
-`/live` or `/live.mjpeg`
-
-####Current live picture
-`/live.jpg`
-
-####Delete an event
-`/delete?file=filename_of_video.mp4`
-
-A GET request to this endpoint deletes the given video including his preview image.
-
-####Exclude areas from motion detection
-`/blacklist`
-
-On this site you're able to exclude areas from motion detection. After a change of the areas you have to restart the motion detection (`sudo service motiondetection restart`).
-
----
-
-###For testing and debugging
-
-####Fake Motion
-`/force_motion`
-
-####Stop Faking Motion
-`/stop_force_motion`
-
-####Activate Nightmode
-`/nightmode`
-
-Works only if `night_mode_allowed` in the config is `True`
-
-####Activate Daymode
-`/daymode`
+- **Activate Daymode `/daymode`**
 
 ---
 
