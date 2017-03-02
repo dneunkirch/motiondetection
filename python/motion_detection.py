@@ -485,8 +485,7 @@ if __name__ == '__main__':
     output_folder = os.path.join(directory, 'unconverted')
     fail_folder = os.path.join(directory, 'unconverted_fail')
     event_folder = os.path.join(directory, 'events')
-    web_folder = os.path.join(directory
-    '../web')
+    web_folder = os.path.join(directory, '../web')
     temp_folder = os.path.join(directory, 'temp')
     convert_script = os.path.join(directory, '../scripts', 'convert_cron.sh')
 
