@@ -67,6 +67,7 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         self.protocol_version = 'HTTP/1.1'
         self.send_response(303)
+        self.send_header('Content-type', 'text/html')
         self.send_header('Location', '/blacklist.html')
         self.end_headers()
 
