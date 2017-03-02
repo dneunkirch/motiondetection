@@ -65,6 +65,10 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.send_header('WWW-Authenticate', 'Basic realm="Test"')
             return
 
+        self.send_response(303)
+        self.send_header('Location', '/blacklist.html')
+        self.end_headers()
+
     def do_GET(self):
         global force_motion, camera_settings
 
@@ -170,7 +174,6 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(payload))
 
     def serve_file(self, filename, content_type):
-        self.protocol_version = 'HTTP/1.1'
         f = open(filename, 'rb')
         range_request = False
         if 'Range' in self.headers:
