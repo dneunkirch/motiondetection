@@ -28,7 +28,7 @@
         Add to blacklist: <input type="radio" name="marker-mode" value="1" checked/><br/>
         Remove from blacklist: <input type="radio" name="marker-mode" value="2"/><br/>
 
-        <form method="POST">
+        <form method="POST" action="/blacklist/save">
             <input type="hidden" value="" name="motionblocks"/>
             <button id="create-blacklist">save</button>
         </form>
