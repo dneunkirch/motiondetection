@@ -60,7 +60,7 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         return authorization in authorities
 
     def do_GET(self):
-        global force_motion, camera_settings, events
+        global force_motion, camera_settings
 
         if not self.is_authenticated():
             self.send_response(401)
@@ -106,13 +106,17 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 camera_settings = day_settings
             self.send_response(200)
 
-        elif self.path == '/reset_cache':
-            events = None
-            self.send_response(200)
+        elif self.path.endswith('.html'):
+            self.serve_file(filename='../web' + self.path, content_type='application/xhtml+xml')
+
+        elif self.path.endswith('.css'):
+            self.serve_file(filename='../web' + self.path, content_type='text/css')
+
+        elif self.path.endswith('.js'):
+            self.serve_file(filename='../web' + self.path, content_type='application/javascript')
 
         elif self.path == '/delete':
             # TODO: delete video + preview
-            events = None
             pass
 
         else:
@@ -138,20 +142,19 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 break
 
     def show_events(self):
-        global events
-        if not events or True:  # TODO remove
-            events = []
-            videos = os.listdir(event_folder)
-            for video in videos:
-                if not video.endswith('.mp4'):
-                    continue
-                video_file = os.path.join(event_folder, video)
-                events.append({'video': '/' + video,
-                               'size': os.stat(video_file).st_size,
-                               'date': video[:19],
-                               'duration': int(video[20:][:-4]),
-                               'poster': '/' + video[:19] + '.jpg'
-                               })
+        events = []
+        videos = os.listdir(event_folder)
+        for video in videos:
+            if not video.endswith('.mp4'):
+                continue
+            video_file = os.path.join(event_folder, video)
+            events.append({
+                'video': '/' + video,
+                'size': os.stat(video_file).st_size,
+                'date': video[:19],
+                'duration': int(video[20:][:-4]),
+                'poster': '/' + video[:19] + '.jpg'
+            })
         self.serve_json(payload=events)
 
     def serve_json(self, payload):
@@ -473,7 +476,6 @@ if __name__ == '__main__':
     force_motion = False
     camera_settings = day_settings
     output = StreamingOutput()
-    events = None
     has_roi = False
     roi_x = None
     roi_y = None
