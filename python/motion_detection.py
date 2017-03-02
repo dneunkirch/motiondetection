@@ -164,15 +164,18 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(payload))
 
     def serve_file(self, filename, content_type, range_request_allowed=False):
+        self.protocol_version = 'HTTP/1.1'
         f = open(filename, 'rb')
+        range_request = False
         if 'Range' in self.headers:
             self.send_response(206)
+            range_request = True
         else:
             self.send_response(200)
         size = os.stat(filename).st_size
         start_range = 0
         end_range = size
-        if 'Range' in self.headers:
+        if range_request:
             s, e = self.headers['range'][6:].split('-', 1)
             sl = len(s)
             el = len(e)
@@ -184,11 +187,12 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 ei = int(e)
                 if ei < size:
                     start_range = size - ei
-        self.send_header('Content-type', content_type)
+            self.send_header('Content-Length', end_range - start_range)
+
         if range_request_allowed:
             self.send_header('Accept-Ranges', 'bytes')
+        self.send_header('Content-type', content_type)
         self.send_header('Content-Range', 'bytes ' + str(start_range) + '-' + str(end_range - 1) + '/' + str(size))
-        self.send_header('Content-Length', end_range - start_range)
         self.end_headers()
         f.seek(start_range, 0)
         chunk = end_range - start_range
