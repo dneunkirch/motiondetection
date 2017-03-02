@@ -78,7 +78,7 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.show_events()
 
         elif self.path.endswith('.mp4') and os.path.exists(event_folder + self.path):
-            self.serve_file(filename=event_folder + self.path, content_type='video/mp4', range_request_allowed=True)
+            self.serve_file(filename=event_folder + self.path, content_type='video/mp4')
 
         elif self.path.endswith('.jpg') and os.path.exists(event_folder + self.path):
             self.serve_file(filename=event_folder + self.path, content_type='image/jpg')
@@ -163,7 +163,7 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(json.dumps(payload))
 
-    def serve_file(self, filename, content_type, range_request_allowed=False):
+    def serve_file(self, filename, content_type):
         self.protocol_version = 'HTTP/1.1'
         f = open(filename, 'rb')
         range_request = False
@@ -187,12 +187,11 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 ei = int(e)
                 if ei < size:
                     start_range = size - ei
-            self.send_header('Content-Length', end_range - start_range)
+            self.send_header('Content-Range', 'bytes ' + str(start_range) + '-' + str(end_range - 1) + '/' + str(size))
 
-        if range_request_allowed:
-            self.send_header('Accept-Ranges', 'bytes')
+        self.send_header('Accept-Ranges', 'bytes')
         self.send_header('Content-type', content_type)
-        self.send_header('Content-Range', 'bytes ' + str(start_range) + '-' + str(end_range - 1) + '/' + str(size))
+        self.send_header('Content-Length', end_range - start_range)
         self.end_headers()
         f.seek(start_range, 0)
         chunk = end_range - start_range
