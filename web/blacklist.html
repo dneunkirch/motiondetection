@@ -8,7 +8,7 @@
 <body>
 
 <div class="container">
-    <div class="image"></div>
+    <div class="image" style="background-image: url('/live.mjpeg')"></div>
     <canvas id="blacklist" width="960" height="540" data-exists='false' data-current=''></canvas>
     <div class="grid"></div>
 </div>
@@ -29,8 +29,6 @@
         Remove from blacklist: <input type="radio" name="marker-mode" value="2"/><br/>
 
         <form method="POST">
-
-
             <input type="hidden" value="" name="motionblocks"/>
             <button id="create-blacklist">save</button>
         </form>
