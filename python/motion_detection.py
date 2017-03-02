@@ -107,7 +107,7 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.send_response(200)
 
         elif self.path.endswith('.html'):
-            self.serve_file(filename=web_folder + self.path, content_type='application/xhtml+xml')
+            self.serve_file(filename=web_folder + self.path, content_type='text/html')
 
         elif self.path.endswith('.css'):
             self.serve_file(filename=web_folder + self.path, content_type='text/css')
