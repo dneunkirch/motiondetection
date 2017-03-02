@@ -66,9 +66,8 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             return
 
         self.protocol_version = 'HTTP/1.1'
-        self.send_response(302)
-        self.send_header('Content-type', 'text/html')
-        self.send_header('Location', 'http://192.168.2.241:8080/blacklist.html')
+        self.send_response(303)
+        self.send_header('Location', '/blacklist.html')
         self.end_headers()
 
     def do_GET(self):
