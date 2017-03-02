@@ -1,13 +1,3 @@
-<?php
-    $motionblocks = $_POST['motionblocks'];
-    if( isset($motionblocks) ) {
-       $file = fopen("roi.txt", "w");
-       fwrite($file, $motionblocks);
-       fclose($file);
-       header('Location: blacklist.php');
-    }
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +9,7 @@
 
 <div class="container">
     <div class="image"></div>
-    <canvas id="blacklist" width="960" height="540" data-exists='<?= file_exists("roi.txt"); ?>' data-current='<?= file_get_contents("roi.txt"); ?>'></canvas>
+    <canvas id="blacklist" width="960" height="540" data-exists='false' data-current=''></canvas>
     <div class="grid"></div>
 </div>
 
