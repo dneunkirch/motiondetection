@@ -59,6 +59,12 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         authorization = self.headers['Authorization']
         return authorization in authorities
 
+    def do_POST(self):
+        if not self.is_authenticated():
+            self.send_response(401)
+            self.send_header('WWW-Authenticate', 'Basic realm="Test"')
+            return
+
     def do_GET(self):
         global force_motion, camera_settings
 
