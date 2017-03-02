@@ -107,13 +107,13 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.send_response(200)
 
         elif self.path.endswith('.html'):
-            self.serve_file(filename=self.web_folder + self.path, content_type='application/xhtml+xml')
+            self.serve_file(filename=web_folder + self.path, content_type='application/xhtml+xml')
 
         elif self.path.endswith('.css'):
-            self.serve_file(filename=self.web_folder + self.path, content_type='text/css')
+            self.serve_file(filename=web_folder + self.path, content_type='text/css')
 
         elif self.path.endswith('.js'):
-            self.serve_file(filename=self.web_folder + self.path, content_type='application/javascript')
+            self.serve_file(filename=web_folder + self.path, content_type='application/javascript')
 
         elif self.path == '/delete':
             # TODO: delete video + preview
