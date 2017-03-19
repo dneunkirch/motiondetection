@@ -466,7 +466,7 @@ def setup_default_configuration():
     write_default_value(section='basic_auth', option='enabled', value='True')
     write_default_value(section='socket_notification', option='enabled', value='False')
     write_default_value(section='socket_notification', option='host', value='127.0.0.1')
-    write_default_value(section='socket_notification', option='enabled', value='25000')
+    write_default_value(section='socket_notification', option='port', value='25000')
     write_default_value(section='socket_notification', option='id', value='motiondetection')
 
     if not config.has_section('users'):
