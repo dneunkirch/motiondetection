@@ -296,7 +296,7 @@ class MotionDetection(object):
             camera.wait_recording(0.5, splitter_port=self.motion_port)
             if self.has_motion():
                 print 'new motion event'
-                threading.Thread(target=self.notify_socket, kwargs={'action': 'motion-started'}).start()
+                threading.Thread(target=self.__notify_socket, kwargs={'action': 'motion-started'}).start()
                 self.motion_index += 1
                 current_framerate = camera.framerate
                 filename_before = str(self.motion_index) + '_before_' + str(current_framerate) + '.h264'
