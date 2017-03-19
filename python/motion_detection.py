@@ -501,9 +501,9 @@ if __name__ == '__main__':
     basic_auth = config.getboolean(section='basic_auth', option='enabled')
 
     socket_notification_enabled = config.getboolean(section='socket_notification', option='enabled')
-    socket_host = config.getboolean(section='socket_notification', option='host')
-    socket_port = config.getboolean(section='socket_notification', option='port')
-    socket_id = config.getboolean(section='socket_notification', option='id')
+    socket_host = config.get(section='socket_notification', option='host')
+    socket_port = config.getint(section='socket_notification', option='port')
+    socket_id = config.get(section='socket_notification', option='id')
 
     last_mode_check = datetime.datetime.min
     night_mode_active = False
