@@ -8,6 +8,7 @@ import io
 import json
 import os
 import re
+import socket
 import threading
 import time
 from base64 import b64encode
@@ -60,10 +61,10 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         return authorization in authorities
 
     def do_POST(self):
-        # if not self.is_authenticated():
-        #    self.send_response(401)
-        #   self.send_header('WWW-Authenticate', 'Basic realm="Test"')
-        #  return
+        if not self.is_authenticated():
+            self.send_response(401)
+            self.send_header('WWW-Authenticate', 'Basic realm="Test"')
+            return
 
         self.protocol_version = 'HTTP/1.1'
         self.send_response(303)
@@ -238,6 +239,17 @@ class MotionDetection(object):
         self.preview_port = 3
         self.motion_port = 1
 
+    def __notify_socket(self, action):
+        if not socket_notification_enabled:
+            return
+        connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        address = (socket_host, socket_port)
+        connection.connect(address)
+        payload = {'action': action, 'cameraId': socket_id}
+        message = json.dumps(payload)
+        connection.send(message)
+        connection.close()
+
     def capture_temp_image(self):
         stream = io.BytesIO()
         camera.capture(stream, format='jpeg', resize=self.temp_resolution, splitter_port=self.preview_port, use_video_port=True)
@@ -280,6 +292,7 @@ class MotionDetection(object):
             camera.wait_recording(0.5, splitter_port=self.motion_port)
             if self.has_motion():
                 print 'new motion event'
+                self.__notify_socket('motion-started')
                 self.motion_index += 1
                 current_framerate = camera.framerate
                 filename_before = str(self.motion_index) + '_before_' + str(current_framerate) + '.h264'
@@ -301,6 +314,7 @@ class MotionDetection(object):
                 os.rename(f1_temp, f1)
                 os.rename(f2_temp, f2)
                 print 'motion event stopped'
+                self.__notify_socket('motion-stopped')
                 call('bash ' + convert_script, shell=True)
         camera.stop_recording(splitter_port=self.motion_port)
 
@@ -450,6 +464,10 @@ def setup_default_configuration():
     write_default_value(section='camera', option='rotation', value='0')
     write_default_value(section='webserver', option='port', value='8080')
     write_default_value(section='basic_auth', option='enabled', value='True')
+    write_default_value(section='socket_notification', option='enabled', value='False')
+    write_default_value(section='socket_notification', option='host', value='127.0.0.1')
+    write_default_value(section='socket_notification', option='enabled', value='25000')
+    write_default_value(section='socket_notification', option='id', value='motiondetection')
 
     if not config.has_section('users'):
         write_default_value(section='users', option='username', value='password')
@@ -481,6 +499,11 @@ if __name__ == '__main__':
     night_settings = CameraSettings(framerate=5, percentage_changed=1, exposure_mode='off', shutter_speed=200000, iso=1600)
     webserver_port = config.getint(section='webserver', option='port')
     basic_auth = config.getboolean(section='basic_auth', option='enabled')
+
+    socket_notification_enabled = config.getboolean(section='socket_notification', option='enabled')
+    socket_host = config.getboolean(section='socket_notification', option='host')
+    socket_port = config.getboolean(section='socket_notification', option='port')
+    socket_id = config.getboolean(section='socket_notification', option='id')
 
     last_mode_check = datetime.datetime.min
     night_mode_active = False
