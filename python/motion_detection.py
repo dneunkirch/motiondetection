@@ -242,13 +242,17 @@ class MotionDetection(object):
     def __notify_socket(self, action):
         if not socket_notification_enabled:
             return
-        connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        address = (socket_host, socket_port)
-        connection.connect(address)
-        payload = {'action': action, 'cameraId': socket_id}
-        message = json.dumps(payload)
-        connection.send(message)
-        connection.close()
+        try:
+            connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            connection.settimeout(2)
+            address = (socket_host, socket_port)
+            connection.connect(address)
+            payload = {'action': action, 'cameraId': socket_id}
+            message = json.dumps(payload)
+            connection.send(message)
+            connection.close()
+        except:
+            pass
 
     def capture_temp_image(self):
         stream = io.BytesIO()
@@ -292,7 +296,7 @@ class MotionDetection(object):
             camera.wait_recording(0.5, splitter_port=self.motion_port)
             if self.has_motion():
                 print 'new motion event'
-                self.__notify_socket('motion-started')
+                threading.Thread(target=self.notify_socket, kwargs={'action': 'motion-started'}).start()
                 self.motion_index += 1
                 current_framerate = camera.framerate
                 filename_before = str(self.motion_index) + '_before_' + str(current_framerate) + '.h264'
@@ -314,7 +318,7 @@ class MotionDetection(object):
                 os.rename(f1_temp, f1)
                 os.rename(f2_temp, f2)
                 print 'motion event stopped'
-                self.__notify_socket('motion-stopped')
+                threading.Thread(target=self.__notify_socket, kwargs={'action': 'motion-stopped'}).start()
                 call('bash ' + convert_script, shell=True)
         camera.stop_recording(splitter_port=self.motion_port)
 
