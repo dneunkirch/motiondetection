@@ -3,22 +3,22 @@
 import BaseHTTPServer
 import ConfigParser
 import SocketServer
-import datetime
 import io
 import json
 import os
 import re
 import socket
 import threading
-import time
 from base64 import b64encode
 from subprocess import call
 from threading import Condition
 
 import Image
+import datetime
 import ephem
 import numpy
 import picamera.array
+import time
 
 
 class CameraSettings:
@@ -59,6 +59,9 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             return False
         authorization = self.headers['Authorization']
         return authorization in authorities
+
+    def do_HEAD(self):
+        self.send_response(200)
 
     def do_POST(self):
         if not self.is_authenticated():
