@@ -3,22 +3,22 @@
 import BaseHTTPServer
 import ConfigParser
 import SocketServer
+import datetime
 import io
 import json
-import os
 import re
 import socket
 import threading
+import time
 from base64 import b64encode
 from subprocess import call
 from threading import Condition
 
 import Image
-import datetime
 import ephem
 import numpy
+import os
 import picamera.array
-import time
 
 
 class CameraSettings:
@@ -121,8 +121,14 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 camera_settings = day_settings
             self.send_response(200)
 
-        elif self.path.endswith('.html'):
-            self.serve_file(filename=web_folder + self.path, content_type='text/html')
+        elif self.path == 'blacklist.html':
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+            self.end_headers()
+            with open(web_folder + '/blacklist.html') as htmlFile:
+                content = htmlFile.read()
+                self.wfile.write(content)
+
 
         elif self.path.endswith('.css'):
             self.serve_file(filename=web_folder + self.path, content_type='text/css')

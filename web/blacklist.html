@@ -9,7 +9,7 @@
 
 <div class="container">
     <div class="image" style="background-image: url('/live.mjpeg')"></div>
-    <canvas id="blacklist" width="960" height="540" data-exists='false' data-current=''></canvas>
+    <canvas id="blacklist" width="960" height="540" data-exists='${data-exists}' data-current='${data-current}'></canvas>
     <div class="grid"></div>
 </div>
 
@@ -37,7 +37,6 @@
 
 <script src="/static/jquery-3.1.1.min.js"></script>
 <script src="/static/blacklist.js"></script>
-
 
 </body>
 </html>
