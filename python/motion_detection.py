@@ -71,6 +71,7 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         # TODO save blacklist param: motionblocks -> roi_file
         self.send_response(303, 'See Other')
         self.send_header('Location', '/blacklist.html')
+        self.end_headers()
 
     def do_GET(self):
         global force_motion, camera_settings
