@@ -55,13 +55,13 @@ Now you're able to start/stop the motion detection with the command `sudo servic
 
 ---
 
-###URLs
+### URLs
 
 The port (default: `8080`) and credentials (default: `username`, `password`) can be changed in the config file. You're able to add multiple users in the `users` section or even turn the basic authorization off.
   
 - **Live MJPEG stream `/live` or `/live.mjpeg`**
 - **Current live picture `/live.jpg`**
-- **Exclude areas from motion detection `/blacklist`**
+- **Exclude areas from motion detection `/blacklist.html`**
 - **Delete an event `/delete?file=filename_of_video.mp4`**
 
     A GET request to this endpoint deletes the given video including his preview image.
@@ -79,7 +79,7 @@ The port (default: `8080`) and credentials (default: `username`, `password`) can
     }
     ```
 
-####For testing and debugging
+#### For testing and debugging
 
 - **Fake Motion `/force_motion`**
 - **Stop Faking Motion `/stop_force_motion`**
@@ -90,7 +90,7 @@ The port (default: `8080`) and credentials (default: `username`, `password`) can
 
 ---
 
-####Todo's
+#### Todo's
 - [ ] submit iOS-App to App-Store
 - [ ] create a web-App
 - [ ] write tests
