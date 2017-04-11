@@ -127,8 +127,14 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.end_headers()
             with open(web_folder + '/blacklist.html') as htmlFile:
                 content = htmlFile.read()
+                data_exists = os.path.exists(roi_file)
+                content.replace('${data-exists}', str(data_exists))
+                if data_exists:
+                    with open(roi_file) as roi:
+                        content.replace('${data-current}', roi.read())
+                else:
+                    content.replace('${data-current}', '')
                 self.wfile.write(content)
-
 
         elif self.path.endswith('.css'):
             self.serve_file(filename=web_folder + self.path, content_type='text/css')
