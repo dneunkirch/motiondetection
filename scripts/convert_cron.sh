@@ -2,12 +2,11 @@
 
 
 scriptFolder=$(dirname "$(readlink -f "$0")")
-config=$(printf "%s/setup.sh" ${scriptFolder})
+unconvertedFolder=$(printf "%s/../python/unconverted/" ${scriptFolder})
+failFolder=$(printf "%s/../python/unconverted_fail/" ${scriptFolder})
 
-. ${config}
-
-source=$(printf "%s*_before_*.h264" ${MOTION_OUTPUT})
-convertScript=$(printf "%sconvert.sh" ${scriptFolder})
+source=$(printf "%s*_before_*.h264" ${unconvertedFolder})
+convertScript=$(printf "%s/convert.sh" ${scriptFolder})
 pid=$(printf "%s.convert_cron.pid" ${scriptFolder})
 
 
@@ -32,11 +31,13 @@ do
   part2=${part1/before/after}
   bash ${convertScript} ${part1} ${part2} ${framerate}
   if [ -f ${part1} ]; then
-    mv ${part1} ${MOTION_FAIL}
+    mv ${part1} ${failFolder}
   fi
   if [ -f ${part2} ]; then
-    mv ${part2} ${MOTION_FAIL}
+    mv ${part2} ${failFolder}
   fi
 done
 
 rm ${pid}
+
+# TODO check for unconverted videos

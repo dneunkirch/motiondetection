@@ -1,25 +1,15 @@
-<?php
-    $motionblocks = $_POST['motionblocks'];
-    if( isset($motionblocks) ) {
-       $file = fopen("roi.txt", "w");
-       fwrite($file, $motionblocks);
-       fclose($file);
-       header('Location: blacklist.php');
-    }
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Motion Detection Blacklist</title>
-    <link rel="stylesheet" href="static/blacklist.css"/>
+    <link rel="stylesheet" href="/static/blacklist.css"/>
 </head>
 <body>
 
 <div class="container">
-    <div class="image"></div>
-    <canvas id="blacklist" width="960" height="540" data-exists='<?= file_exists("roi.txt"); ?>' data-current='<?= file_get_contents("roi.txt"); ?>'></canvas>
+    <div class="image" style="background-image: url('/live.mjpeg')"></div>
+    <canvas id="blacklist" width="960" height="540" data-exists='${data-exists}' data-current='${data-current}'></canvas>
     <div class="grid"></div>
 </div>
 
@@ -38,18 +28,15 @@
         Add to blacklist: <input type="radio" name="marker-mode" value="1" checked/><br/>
         Remove from blacklist: <input type="radio" name="marker-mode" value="2"/><br/>
 
-        <form method="POST">
-
-
-             <input type="hidden" value="" name="motionblocks"/>
+        <form method="POST" action="/blacklist/save">
+            <input type="hidden" value="" name="motionblocks"/>
             <button id="create-blacklist">save</button>
         </form>
     </div>
 </div>
 
-<script src="static/jquery-3.1.1.min.js"></script>
-<script src="static/blacklist.js"></script>
-
+<script src="/static/jquery-3.1.1.min.js"></script>
+<script src="/static/blacklist.js"></script>
 
 </body>
 </html>

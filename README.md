@@ -25,25 +25,8 @@ Instructions for an installation on Raspbian Jessie Lite
 - **Install dependencies** 
 
 ```bash
-sudo apt-get install python-picamera python-imaging gpac libav-tools imagemagick git python-dev python-pip
-sudo pip install pyephem numpy
-```
-
-- **If you don't have a webserver with PHP** *(optional)* **:**
-
-```bash
-sudo apt-get install nginx php5-fpm
-```
-
-Edit the file `/etc/nginx/sites-available/default` and paste the following snippet in the section `location / { ... }`
-
-```json:
-location ~ .php$ {
-  fastcgi_split_path_info ^(.+\.php)(/.+)$;
-  fastcgi_pass unix:/var/run/php5-fpm.sock;
-  fastcgi_index index.php;
-  include fastcgi.conf;
-}
+sudo apt-get install python-imaging gpac libav-tools imagemagick git python-dev python-pip
+sudo pip install pyephem numpy picamera
 ```
 
 - **Clone this repository**
@@ -51,8 +34,6 @@ location ~ .php$ {
 ```bash
 sudo git clone https://github.com/dneunkirch/motiondetection.git /etc/motiondetection
 ```
-
-- **Check if the folders in the file `/etc/motiondetection/scripts/setup.sh` matches to yours**
 
 - **Create a symlink for the init script**
 
@@ -68,48 +49,44 @@ sudo update-rc.d motiondetection defaults
 
 Now you're able to start/stop the motion detection with the command `sudo service motiondetection {start|stop}`. The motion detection starts also automatically at startup.
 
+- **Configuration-File**
+
+`/etc/motiondetection/python/config.ini` 
+
 ---
 
 ###URLs
 
-####Captured Videos
-`http://{host}/motion/events.php`
+The port (default: `8080`) and credentials (default: `username`, `password`) can be changed in the config file. You're able to add multiple users in the `users` section or even turn the basic authorization off.
+  
+- **Live MJPEG stream `/live` or `/live.mjpeg`**
+- **Current live picture `/live.jpg`**
+- **Exclude areas from motion detection `/blacklist`**
+- **Delete an event `/delete?file=filename_of_video.mp4`**
 
-Returns an array of all captured videos as following object:
+    A GET request to this endpoint deletes the given video including his preview image.
+- **Captured Videos `/events`**
 
-```js
-{
-  "date": "dd.MM.yyyy - HH:mm:ss",        // date of video
-  "video": "/motion/events/video.mp4",    // path to video
-  "image": "/motion/events/preview.jpg",  // path to preview image
-  "size": 1000000,                        // size of video in bytes
-  "duration": 10                          // duration of video in seconds
-}
-```
-With the request-parameter previewImageSize (default: 640x360) you're able to control the preview image resolution (e.g. /events.php?previewImageSize=320x180).  
+    Returns an array of all captured videos as following object:
 
+    ```js
+    {
+      "date": "yyyy-MM-dd_HH-mm-ss",    // date of video
+      "video": "/events/video.mp4",     // path to video
+      "poster": "/events/preview.jpg",  // path to preview image
+      "size": 1000000,                  // size of video in bytes
+      "duration": 10                    // duration of video in seconds
+    }
+    ```
 
-####Current live picture
-`http://{host}/motion/live.php`
+####For testing and debugging
 
-Returns the newest image as following object: 
+- **Fake Motion `/force_motion`**
+- **Stop Faking Motion `/stop_force_motion`**
+- **Activate Daymode `/daymode`**
+- **Activate Nightmode `/nightmode`**
 
-```js
-{
-  "url": "/motion/live/image.jpg", // path to image
-  "date": "dd.MM.yyyy - HH:mm:ss"  // date of image
-}
-```
-
-####Delete an event
-`http://{host}/motion/delete.php?file=filename_of_video.mp4`
-
-A GET request to this endpoint deletes the given video including his preview images.
-
-####Exclude areas from motion detection
-`http://{host}/motion/blacklist.php`
-
-On this site you're able to exclude areas from motion detection. After a change of the areas you have to restart the motion detection (`sudo service motiondetection restart`).
+    Works only if `night_mode_allowed` in the config is `True`
 
 ---
 
