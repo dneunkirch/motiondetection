@@ -81,14 +81,14 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         with open(roi_file, 'w') as f:
             f.write(content)
 
-        fetch_region_of_interest()
-
         self.protocol_version = 'HTTP/1.1'
         self.send_response(303)
         self.send_header('Location', '/blacklist.html')
         self.send_header('Content-Length', 0)
         self.end_headers()
         self.wfile.write()
+        
+        fetch_region_of_interest()
 
     def do_GET(self):
         global force_motion, camera_settings
