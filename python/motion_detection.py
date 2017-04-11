@@ -69,10 +69,9 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.send_header('WWW-Authenticate', 'Basic realm="Test"')
             return
 
-        self.protocol_version = 'HTTP/1.1'
-        self.send_response(303)
         self.send_header('Location', '/blacklist.html')
         self.end_headers()
+        self.wfile.write(b'HTTP/1.0 200 OK\r\n')
 
     def do_GET(self):
         global force_motion, camera_settings
