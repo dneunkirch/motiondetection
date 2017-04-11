@@ -72,10 +72,14 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         length = int(self.headers.getheader('content-length'))
         params = parse_qs(self.rfile.read(length), keep_blank_values=1)
-        roi = params['motionblocks'][0]
-        print(roi)
+
+        roi = params['motionblocks']
+        content = ''
+        if roi:
+            content = roi[0]
+
         with open(roi_file, 'w') as f:
-            f.write(roi)
+            f.write(content)
 
         fetch_region_of_interest()
 
@@ -470,8 +474,9 @@ def fetch_region_of_interest():
 
     for element in roi_content.split(', '):
         match = re.search("(\d*),(\d*)", element)
-        x.append(int(match.group(1)))
-        y.append(int(match.group(2)))
+        if match:
+            x.append(int(match.group(1)))
+            y.append(int(match.group(2)))
 
     if len(x) == 0:
         has_roi = False
