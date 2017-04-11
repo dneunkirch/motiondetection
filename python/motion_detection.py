@@ -69,10 +69,17 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.send_response(401)
             self.send_header('WWW-Authenticate', 'Basic realm="Test"')
             return
-        # TODO save blacklist param: motionblocks -> roi_file
+
         length = int(self.headers.getheader('content-length'))
-        postvars = parse_qs(self.rfile.read(length), keep_blank_values=1)
-        print(postvars)
+        params = parse_qs(self.rfile.read(length), keep_blank_values=1)
+        roi = params['motionblocks']
+        f = open(roi_file, 'w')
+        f.write(roi)
+        f.flush()
+        f.close()
+
+        fetch_region_of_interest()
+
         self.protocol_version = 'HTTP/1.1'
         self.send_response(303)
         self.send_header('Location', '/blacklist.html')
@@ -468,6 +475,7 @@ def fetch_region_of_interest():
         y.append(int(match.group(2)))
 
     if len(x) == 0:
+        has_roi = False
         return
 
     has_roi = True
