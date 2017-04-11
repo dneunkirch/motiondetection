@@ -13,6 +13,7 @@ import time
 from base64 import b64encode
 from subprocess import call
 from threading import Condition
+from urlparse import parse_qs
 
 import Image
 import ephem
@@ -70,7 +71,7 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             return
         # TODO save blacklist param: motionblocks -> roi_file
         length = int(self.headers.getheader('content-length'))
-        postvars = cgi.parse_qs(self.rfile.read(length), keep_blank_values=1)
+        postvars = parse_qs(self.rfile.read(length), keep_blank_values=1)
         print(postvars)
         self.protocol_version = 'HTTP/1.1'
         self.send_response(303)
