@@ -70,8 +70,7 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             return
 
         self.send_header('Location', '/blacklist.html')
-        self.end_headers()
-        self.wfile.write(b'HTTP/1.0 200 OK\r\n')
+        self.wfile.write(b'HTTP/1.1 303 See Other\r\n')
 
     def do_GET(self):
         global force_motion, camera_settings
