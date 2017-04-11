@@ -70,7 +70,7 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             return
         # TODO save blacklist param: motionblocks -> roi_file
         self.protocol_version = 'HTTP/1.1'
-        self.send_response(303)
+        self.send_response(308)
         self.send_header('Location', '/blacklist.html')
         self.send_header('Content-Length', 0)
         self.end_headers()
