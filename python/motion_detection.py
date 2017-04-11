@@ -6,17 +6,19 @@ import SocketServer
 import datetime
 import io
 import json
-import os
 import re
+import socket
 import threading
 import time
 from base64 import b64encode
 from subprocess import call
 from threading import Condition
+from urlparse import parse_qs
 
 import Image
 import ephem
 import numpy
+import os
 import picamera.array
 
 
@@ -59,8 +61,37 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         authorization = self.headers['Authorization']
         return authorization in authorities
 
+    def do_HEAD(self):
+        self.send_response(200)
+
+    def do_POST(self):
+        if not self.is_authenticated():
+            self.send_response(401)
+            self.send_header('WWW-Authenticate', 'Basic realm="Test"')
+            return
+
+        length = int(self.headers.getheader('content-length'))
+        params = parse_qs(self.rfile.read(length), keep_blank_values=1)
+
+        roi = params['motionblocks']
+        content = ''
+        if roi:
+            content = roi[0]
+
+        with open(roi_file, 'w') as f:
+            f.write(content)
+
+        self.protocol_version = 'HTTP/1.1'
+        self.send_response(303)
+        self.send_header('Location', '/blacklist.html')
+        self.send_header('Content-Length', 0)
+        self.end_headers()
+        self.wfile.write()
+        
+        fetch_region_of_interest()
+
     def do_GET(self):
-        global force_motion, camera_settings, events
+        global force_motion, camera_settings
 
         if not self.is_authenticated():
             self.send_response(401)
@@ -106,13 +137,32 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 camera_settings = day_settings
             self.send_response(200)
 
-        elif self.path == '/reset_cache':
-            events = None
+        elif self.path == '/blacklist.html':
+            self.protocol_version = 'HTTP/1.1'
             self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+
+            with open(web_folder + '/blacklist.html') as htmlFile:
+                content = htmlFile.read()
+                data_exists = os.path.exists(roi_file)
+                content = content.replace('${data-exists}', str(data_exists))
+                if data_exists:
+                    with open(roi_file) as roi:
+                        content = content.replace('${data-current}', roi.read())
+                else:
+                    content = content.replace('${data-current}', '')
+                self.send_header('Content-Length', len(content))
+                self.end_headers()
+                self.wfile.write(content)
+
+        elif self.path.endswith('.css'):
+            self.serve_file(filename=web_folder + self.path, content_type='text/css')
+
+        elif self.path.endswith('.js'):
+            self.serve_file(filename=web_folder + self.path, content_type='application/javascript')
 
         elif self.path == '/delete':
             # TODO: delete video + preview
-            events = None
             pass
 
         else:
@@ -138,20 +188,19 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 break
 
     def show_events(self):
-        global events
-        if not events or True:  # TODO remove
-            events = []
-            videos = os.listdir(event_folder)
-            for video in videos:
-                if not video.endswith('.mp4'):
-                    continue
-                video_file = os.path.join(event_folder, video)
-                events.append({'video': '/' + video,
-                               'size': os.stat(video_file).st_size,
-                               'date': video[:19],
-                               'duration': int(video[20:][:-4]),
-                               'poster': '/' + video[:19] + '.jpg'
-                               })
+        events = []
+        videos = os.listdir(event_folder)
+        for video in videos:
+            if not video.endswith('.mp4'):
+                continue
+            video_file = os.path.join(event_folder, video)
+            events.append({
+                'video': '/' + video,
+                'size': os.stat(video_file).st_size,
+                'date': video[:19],
+                'duration': int(video[20:][:-4]),
+                'poster': '/' + video[:19] + '.jpg'
+            })
         self.serve_json(payload=events)
 
     def serve_json(self, payload):
@@ -162,14 +211,16 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def serve_file(self, filename, content_type):
         f = open(filename, 'rb')
+        range_request = False
         if 'Range' in self.headers:
             self.send_response(206)
+            range_request = True
         else:
             self.send_response(200)
         size = os.stat(filename).st_size
         start_range = 0
         end_range = size
-        if 'Range' in self.headers:
+        if range_request:
             s, e = self.headers['range'][6:].split('-', 1)
             sl = len(s)
             el = len(e)
@@ -181,9 +232,10 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 ei = int(e)
                 if ei < size:
                     start_range = size - ei
-        self.send_header('Content-type', content_type)
+            self.send_header('Content-Range', 'bytes ' + str(start_range) + '-' + str(end_range - 1) + '/' + str(size))
+
         self.send_header('Accept-Ranges', 'bytes')
-        self.send_header('Content-Range', 'bytes ' + str(start_range) + '-' + str(end_range - 1) + '/' + str(size))
+        self.send_header('Content-type', content_type)
         self.send_header('Content-Length', end_range - start_range)
         self.end_headers()
         f.seek(start_range, 0)
@@ -220,6 +272,21 @@ class MotionDetection(object):
         self.motion_index = 0
         self.preview_port = 3
         self.motion_port = 1
+
+    def __notify_socket(self, action):
+        if not socket_notification_enabled:
+            return
+        try:
+            connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            connection.settimeout(2)
+            address = (socket_host, socket_port)
+            connection.connect(address)
+            payload = {'action': action, 'cameraId': socket_id}
+            message = json.dumps(payload)
+            connection.send(message)
+            connection.close()
+        except:
+            pass
 
     def capture_temp_image(self):
         stream = io.BytesIO()
@@ -263,6 +330,7 @@ class MotionDetection(object):
             camera.wait_recording(0.5, splitter_port=self.motion_port)
             if self.has_motion():
                 print 'new motion event'
+                threading.Thread(target=self.__notify_socket, kwargs={'action': 'motion-started'}).start()
                 self.motion_index += 1
                 current_framerate = camera.framerate
                 filename_before = str(self.motion_index) + '_before_' + str(current_framerate) + '.h264'
@@ -284,6 +352,7 @@ class MotionDetection(object):
                 os.rename(f1_temp, f1)
                 os.rename(f2_temp, f2)
                 print 'motion event stopped'
+                threading.Thread(target=self.__notify_socket, kwargs={'action': 'motion-stopped'}).start()
                 call('bash ' + convert_script, shell=True)
         camera.stop_recording(splitter_port=self.motion_port)
 
@@ -405,10 +474,12 @@ def fetch_region_of_interest():
 
     for element in roi_content.split(', '):
         match = re.search("(\d*),(\d*)", element)
-        x.append(int(match.group(1)))
-        y.append(int(match.group(2)))
+        if match:
+            x.append(int(match.group(1)))
+            y.append(int(match.group(2)))
 
     if len(x) == 0:
+        has_roi = False
         return
 
     has_roi = True
@@ -433,6 +504,10 @@ def setup_default_configuration():
     write_default_value(section='camera', option='rotation', value='0')
     write_default_value(section='webserver', option='port', value='8080')
     write_default_value(section='basic_auth', option='enabled', value='True')
+    write_default_value(section='socket_notification', option='enabled', value='False')
+    write_default_value(section='socket_notification', option='host', value='127.0.0.1')
+    write_default_value(section='socket_notification', option='port', value='25000')
+    write_default_value(section='socket_notification', option='id', value='motiondetection')
 
     if not config.has_section('users'):
         write_default_value(section='users', option='username', value='password')
@@ -465,6 +540,11 @@ if __name__ == '__main__':
     webserver_port = config.getint(section='webserver', option='port')
     basic_auth = config.getboolean(section='basic_auth', option='enabled')
 
+    socket_notification_enabled = config.getboolean(section='socket_notification', option='enabled')
+    socket_host = config.get(section='socket_notification', option='host')
+    socket_port = config.getint(section='socket_notification', option='port')
+    socket_id = config.get(section='socket_notification', option='id')
+
     last_mode_check = datetime.datetime.min
     night_mode_active = False
     location = ephem.Observer()
@@ -473,7 +553,6 @@ if __name__ == '__main__':
     force_motion = False
     camera_settings = day_settings
     output = StreamingOutput()
-    events = None
     has_roi = False
     roi_x = None
     roi_y = None
@@ -483,6 +562,7 @@ if __name__ == '__main__':
     output_folder = os.path.join(directory, 'unconverted')
     fail_folder = os.path.join(directory, 'unconverted_fail')
     event_folder = os.path.join(directory, 'events')
+    web_folder = os.path.join(directory, '../web')
     temp_folder = os.path.join(directory, 'temp')
     convert_script = os.path.join(directory, '../scripts', 'convert_cron.sh')
 

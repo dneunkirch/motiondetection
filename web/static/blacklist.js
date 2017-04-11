@@ -18,7 +18,6 @@ var ctx = blacklist.getContext('2d');
 ctx.fillStyle = 'rgba(255, 0, 0, 1)';
 
 
-refreshImage();
 prepareData();
 displayCurrentBlacklist();
 watchPenStrengthChanges();
@@ -65,12 +64,6 @@ function prepareData() {
 
 function keyName(x, y) {
     return `(${y},${x})`;
-}
-
-function refreshImage() {
-    $.getJSON('live.php').then(function (data) {
-        $('.image').css('background-image', `url(${data.url})`);
-    })
 }
 
 function watchPenStrengthChanges() {
