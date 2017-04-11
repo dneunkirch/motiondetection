@@ -69,8 +69,10 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.send_header('WWW-Authenticate', 'Basic realm="Test"')
             return
         # TODO save blacklist param: motionblocks -> roi_file
+        self.protocol_version = 'HTTP/1.1'
         self.send_response(303, 'See Other')
         self.send_header('Location', '/blacklist.html')
+        self.send_header('Content-Length', 0)
         self.end_headers()
 
     def do_GET(self):
