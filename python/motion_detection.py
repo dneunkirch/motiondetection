@@ -72,7 +72,7 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         length = int(self.headers.getheader('content-length'))
         params = parse_qs(self.rfile.read(length), keep_blank_values=1)
-        roi = params['motionblocks']
+        roi = params['motionblocks'][0]
         print(roi)
         with open(roi_file, 'w') as f:
             f.write(roi)
