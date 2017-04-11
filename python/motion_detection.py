@@ -121,7 +121,7 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 camera_settings = day_settings
             self.send_response(200)
 
-        elif self.path == 'blacklist.html':
+        elif self.path == '/blacklist.html':
             self.send_response(200)
             self.send_header('Content-Type', 'text/html')
             self.end_headers()
