@@ -21,6 +21,10 @@ import numpy
 import os
 import picamera.array
 
+from flask import Flask
+app = Flask(__name__)
+
+
 
 class CameraSettings:
     def __init__(self, framerate, percentage_changed, exposure_mode='auto', shutter_speed=0, iso=0):
@@ -521,6 +525,10 @@ def setup_users():
         password = config.get('users', username)
         authorities.append('Basic ' + b64encode(username + ':' + password))
 
+@app.route("/")
+def main():
+    return "start"
+
 
 if __name__ == '__main__':
     print 'started'
@@ -544,6 +552,8 @@ if __name__ == '__main__':
     socket_host = config.get(section='socket_notification', option='host')
     socket_port = config.getint(section='socket_notification', option='port')
     socket_id = config.get(section='socket_notification', option='id')
+
+    app.run(host='0.0.0.0', port=webserver_port)
 
     last_mode_check = datetime.datetime.min
     night_mode_active = False
@@ -584,7 +594,10 @@ if __name__ == '__main__':
 
     mjpeg_streamer = MjpegStreamer()
     motion_detection = MotionDetection()
-    server = Server()
+    #server = Server()
+
+
+
 
     try:
         while threading.active_count > 0:
