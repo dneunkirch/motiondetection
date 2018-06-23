@@ -307,8 +307,8 @@ class MotionDetection(object):
         global force_motion
         if force_motion:
             return True
+        current_temp_img = self.capture_temp_image()
         return False
-        # current_temp_img = self.capture_temp_image()
         # diff = (numpy.absolute(self.prev_temp_img.astype(numpy.int) - current_temp_img.astype(numpy.int)) > 22).sum()
         # self.prev_temp_img = current_temp_img
         # motion = diff >= motion_score
