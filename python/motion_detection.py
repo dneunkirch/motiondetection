@@ -299,6 +299,7 @@ class MotionDetection(object):
 
     def has_motion(self):
         global force_motion
+        print 'check motion'
         if force_motion:
             return True
         current_temp_img = self.capture_temp_image()
