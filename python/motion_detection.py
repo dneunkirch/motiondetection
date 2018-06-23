@@ -292,7 +292,7 @@ class MotionDetection(object):
         print '   capture temp image'
         stream = io.BytesIO()
         print '   new stream'
-        camera.capture(stream, format='jpeg', resize=self.temp_resolution, splitter_port=self.preview_port, use_video_port=True)
+        # camera.capture(stream, format='jpeg', resize=self.temp_resolution, splitter_port=self.preview_port, use_video_port=True)
         print '   image captured'
         stream.seek(0)
         print '   seek stream'
@@ -361,6 +361,7 @@ class MotionDetection(object):
                 print 'motion event stopped'
                 threading.Thread(target=self.__notify_socket, kwargs={'action': 'motion-stopped'}).start()
                 call('bash ' + convert_script, shell=True)
+        print 'stop recording motion port'
         camera.stop_recording(splitter_port=self.motion_port)
 
     def stop(self):
