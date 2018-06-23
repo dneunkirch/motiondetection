@@ -269,7 +269,7 @@ class MotionDetection(object):
         self.motion_stream = None
         self.bitrate = 3000000
         self.motion_index = 0
-        self.preview_port = 1
+        self.preview_port = 0
         self.motion_port = 3
 
     def __notify_socket(self, action):
