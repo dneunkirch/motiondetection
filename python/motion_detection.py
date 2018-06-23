@@ -292,7 +292,7 @@ class MotionDetection(object):
         print '   capture temp image'
         stream = io.BytesIO()
         print '   new stream'
-        camera.capture(stream, format='rgb', resize=self.temp_resolution, splitter_port=self.preview_port, use_video_port=True)
+        camera.capture(stream, format='rgba', resize=self.temp_resolution, splitter_port=self.preview_port, use_video_port=True)
         print '   image captured'
         stream.seek(0)
         print '   seek stream'
