@@ -2,10 +2,15 @@
 
 import BaseHTTPServer
 import ConfigParser
+import Image
 import SocketServer
 import datetime
+import ephem
 import io
 import json
+import numpy
+import os
+import picamera.array
 import re
 import socket
 import threading
@@ -14,12 +19,6 @@ from base64 import b64encode
 from subprocess import call
 from threading import Condition
 from urlparse import parse_qs
-
-import Image
-import ephem
-import numpy
-import os
-import picamera.array
 
 
 class CameraSettings:
@@ -87,7 +86,7 @@ class StreamingHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_header('Content-Length', 0)
         self.end_headers()
         self.wfile.write()
-        
+
         fetch_region_of_interest()
 
     def do_GET(self):
@@ -384,6 +383,7 @@ class Server(object):
 
 class MjpegStreamer(object):
     def __init__(self):
+        object.__init__(self)
         self.streaming_port = 2
         self.streaming = False
 
