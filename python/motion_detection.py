@@ -580,6 +580,7 @@ if __name__ == '__main__':
     camera.sharpness = config.getint(section='camera', option='sharpness')
     camera.rotation = config.getint(section='camera', option='rotation')
 
+    print 'fetch roi'
     fetch_region_of_interest()
 
     mjpeg_streamer = MjpegStreamer()
