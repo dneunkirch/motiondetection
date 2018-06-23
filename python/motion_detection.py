@@ -593,7 +593,8 @@ if __name__ == '__main__':
             check_for_camera_settings_switch()
             if camera_settings:
                 change_camera_settings()
-    except:
+    except Exception as e:
+        print e
         pass
     finally:
         motion_detection.stop()
