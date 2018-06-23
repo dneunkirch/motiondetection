@@ -288,18 +288,11 @@ class MotionDetection(object):
             pass
 
     def capture_temp_image(self):
-        print '------------------------'
-        print '   capture temp image'
         stream = io.BytesIO()
-        print '   new stream'
         camera.capture(stream, format='jpeg', resize=self.temp_resolution, splitter_port=self.preview_port, use_video_port=True)
-        print '   image captured'
         stream.seek(0)
-        print '   seek stream'
         image = Image.open(stream)
-        print '   read image'
         image_array = numpy.asarray(image)
-        print '   convert image'
         if not has_roi:
             return image_array[::, ::, 1]
         return image_array[roi_x, roi_y, 1]
@@ -309,13 +302,12 @@ class MotionDetection(object):
         if force_motion:
             return True
         current_temp_img = self.capture_temp_image()
-        return False
-        # diff = (numpy.absolute(self.prev_temp_img.astype(numpy.int) - current_temp_img.astype(numpy.int)) > 22).sum()
-        # self.prev_temp_img = current_temp_img
-        # motion = diff >= motion_score
-        # if motion:
-        #    print 'motion detected with score ', diff
-        # return motion
+        diff = (numpy.absolute(self.prev_temp_img.astype(numpy.int) - current_temp_img.astype(numpy.int)) > 22).sum()
+        self.prev_temp_img = current_temp_img
+        motion = diff >= motion_score
+        if motion:
+            print 'motion detected with score ', diff
+        return motion
 
     def start(self):
         if self.detect_motion:
