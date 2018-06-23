@@ -269,7 +269,7 @@ class MotionDetection(object):
         self.motion_stream = None
         self.bitrate = 3000000
         self.motion_index = 0
-        self.preview_port = 0
+        self.preview_port = 3
         self.motion_port = 1
 
     def __notify_socket(self, action):
@@ -386,7 +386,7 @@ class Server(object):
 class MjpegStreamer(object):
     def __init__(self):
         object.__init__(self)
-        self.streaming_port = 2
+        self.streaming_port = 0
         self.streaming = False
 
     def start(self):
