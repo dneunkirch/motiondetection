@@ -288,17 +288,18 @@ class MotionDetection(object):
             pass
 
     def capture_temp_image(self):
-        print 'capture temp image'
+        print '------------------------'
+        print '   capture temp image'
         stream = io.BytesIO()
-        print 'new stream'
+        print '   new stream'
         camera.capture(stream, format='jpeg', resize=self.temp_resolution, splitter_port=self.preview_port, use_video_port=True)
-        print 'image captured'
+        print '   image captured'
         stream.seek(0)
-        print 'seek stream'
+        print '   seek stream'
         image = Image.open(stream)
-        print 'read image'
+        print '   read image'
         image_array = numpy.asarray(image)
-        print 'convert image'
+        print '   convert image'
         if not has_roi:
             return image_array[::, ::, 1]
         return image_array[roi_x, roi_y, 1]
