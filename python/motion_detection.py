@@ -269,8 +269,8 @@ class MotionDetection(object):
         self.motion_stream = None
         self.bitrate = 3000000
         self.motion_index = 0
-        self.preview_port = 3
-        self.motion_port = 1
+        self.preview_port = 1
+        self.motion_port = 3
 
     def __notify_socket(self, action):
         if not socket_notification_enabled:
@@ -292,7 +292,6 @@ class MotionDetection(object):
         print '   capture temp image'
         stream = io.BytesIO()
         print '   new stream'
-        print self.preview_port
         camera.capture(stream, format='rgba', resize=self.temp_resolution, splitter_port=self.preview_port, use_video_port=True)
         print '   image captured'
         stream.seek(0)
