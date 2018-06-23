@@ -575,6 +575,7 @@ if __name__ == '__main__':
     if not os.path.exists(fail_folder):
         os.mkdir(fail_folder)
 
+    print 'prepare camera'
     camera = picamera.PiCamera(framerate=day_settings.framerate, sensor_mode=2, resolution=(1920, 1080))
     camera.saturation = config.getint(section='camera', option='saturation')
     camera.sharpness = config.getint(section='camera', option='sharpness')
