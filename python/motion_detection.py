@@ -289,7 +289,7 @@ class MotionDetection(object):
 
     def capture_temp_image(self):
         stream = io.BytesIO()
-        camera.capture(stream, format='jpeg', splitter_port=self.preview_port, use_video_port=True)
+        camera.capture(stream, format='jpeg', resize=self.temp_resolution, splitter_port=self.preview_port, use_video_port=True)
         stream.seek(0)
         image = Image.open(stream)
         image_array = numpy.asarray(image)
