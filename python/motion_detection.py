@@ -299,7 +299,6 @@ class MotionDetection(object):
 
     def has_motion(self):
         global force_motion
-        print 'check motion'
         if force_motion:
             return True
         current_temp_img = self.capture_temp_image()
@@ -354,7 +353,6 @@ class MotionDetection(object):
                 print 'motion event stopped'
                 threading.Thread(target=self.__notify_socket, kwargs={'action': 'motion-stopped'}).start()
                 call('bash ' + convert_script, shell=True)
-        print 'stop recording motion port'
         camera.stop_recording(splitter_port=self.motion_port)
 
     def stop(self):
@@ -385,7 +383,6 @@ class Server(object):
 
 class MjpegStreamer(object):
     def __init__(self):
-        object.__init__(self)
         self.streaming_port = 0
         self.streaming = False
 
@@ -577,13 +574,11 @@ if __name__ == '__main__':
     if not os.path.exists(fail_folder):
         os.mkdir(fail_folder)
 
-    print 'prepare camera'
     camera = picamera.PiCamera(framerate=day_settings.framerate, sensor_mode=2, resolution=(1920, 1080))
     camera.saturation = config.getint(section='camera', option='saturation')
     camera.sharpness = config.getint(section='camera', option='sharpness')
     camera.rotation = config.getint(section='camera', option='rotation')
 
-    print 'fetch roi'
     fetch_region_of_interest()
 
     mjpeg_streamer = MjpegStreamer()
